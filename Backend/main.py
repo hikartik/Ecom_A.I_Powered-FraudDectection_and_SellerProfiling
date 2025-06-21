@@ -1,14 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from Backend.utils.database import connect_to_mongo
+from Backend.utils.database import connect_to_mongo,client
 from Backend.routes import user_routes, product_routes
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     connect_to_mongo()
-    yield
+    try:
+        yield
+    finally:
+        client.close()
 
+        
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
                    allow_methods=["*"], allow_headers=["*"])

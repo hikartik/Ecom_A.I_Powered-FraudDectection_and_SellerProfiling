@@ -7,10 +7,11 @@ class Product(BaseModel):
     product_name:str
     description: Optional[str] = None
     images: List[str] = []  # ✅ Cloudinary URLs
-    realtime_score1: int = 0
-    realtime_score2: int = 0
-    realtime_score3: int = 0
-    realtime_score4: int = 0
-    batch_score: int = 0
+    vision_score: float = 0.0
+    text_score: float = 0.0
+    multimodal_score: float = 0.0
+    ensemble_score: float = 0.0
+    risk_label:str
+    batch_score: float = 0.0
     status: Literal["valid", "blocked_batch", "blocked_ai"] = "valid"
     created_at: datetime = Field(default_factory=datetime.now)

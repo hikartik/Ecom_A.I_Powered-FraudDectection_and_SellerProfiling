@@ -1,6 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, Depends
 from typing import List
-
 from Backend.controllers.product_controller import (
     create_product_controller,
     get_products_by_seller
@@ -21,10 +20,10 @@ async def add_product(
     seller_id: str = Depends(get_current_user_id),
 ):
     return await create_product_controller(
-        seller_id=seller_id,
         product_name=product_name,
         description=description,
-        images=images
+        images=images,
+        seller_id=seller_id
     )
 
 # Seller route to get all of *their* products
