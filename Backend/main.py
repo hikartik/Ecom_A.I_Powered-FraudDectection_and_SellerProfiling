@@ -1,20 +1,23 @@
 from fastapi import FastAPI
-from Backend.routes import predict, list_product
-app = FastAPI() 
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from Backend.utils.database import connect_to_mongo
+from Backend.routes import user_routes, product_routes
 
-# Internal route for Trust & Safety team to get raw predictions
-app.include_router(predict.router, prefix="/predict", tags=["Internal Prediction"])
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    connect_to_mongo()
+    yield
 
-# Seller-facing route: auto-screens new listings in real-time
-app.include_router(
-    list_product.router,
-    prefix="/list_product",
-    tags=["Seller Listing"]
-)
+app = FastAPI(lifespan=lifespan)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True,
+                   allow_methods=["*"], allow_headers=["*"])
+
+app.include_router(user_routes.router)
+
+# Product endpoints: /products/add, /products/my?seller_id=...
+app.include_router(product_routes.router)
+
 
 if __name__ == "__main__":
-    import uvicorn
-
-
-    # Launch the app: reload enables live code updates during development
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
+    import uvicorn; uvicorn.run("Backend.main:app", reload=True)
