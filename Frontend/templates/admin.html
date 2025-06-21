@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Product Management</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+
+      header {
+        background-color: #232f3e;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+      }
+
+      main {
+        padding: 20px;
+      }
+
+      .filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .filters input,
+      .filters select,
+      .filters button {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .filters button {
+        background-color: #febd69;
+        border: none;
+        cursor: pointer;
+      }
+
+      .filters button:hover {
+        background-color: #f3a847;
+      }
+
+      .product-table {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #232f3e;
+        color: white;
+      }
+
+      td button {
+        padding: 5px 10px;
+        margin-right: 5px;
+        cursor: pointer;
+      }
+
+      td button.update {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+
+      td button.update:hover {
+        background-color: #45a049;
+      }
+
+      td select {
+        padding: 5px;
+        border-radius: 4px;
+      }
+
+      td input[type="number"] {
+        padding: 5px;
+        width: 60px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Admin Panel</h1>
+    </header>
+    <main>
+      <section class="filters">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search by product name..."
+        />
+        <select id="sellerFilter">
+          <option value="">All Sellers</option>
+          <option value="SellerA">Seller A</option>
+          <option value="SellerB">Seller B</option>
+          <option value="SellerC">Seller C</option>
+        </select>
+        <select id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="blocked_ai">Blocked AI</option>
+          <option value="blocked_batch">Blocked Batch</option>
+          <option value="current">Current</option>
+        </select>
+        <button id="applyFilters">Apply Filters</button>
+      </section>
+      <section class="product-table">
+        <table id="productTable">
+          <thead>
+            <tr>
+              <th>Product ID</th>
+              <th>Product Name</th>
+              <th>Seller</th>
+              <th>AI Score</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </section>
+    </main>
+  </body>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    // Dummy product data
+    let products = [
+        { id: "P001", name: "Smartphone XYZ", seller: "SellerA", aiScore: 85, status: "current" },
+        { id: "P002", name: "Wireless Headphones", seller: "SellerB", aiScore: 75, status: "current" },
+        { id: "P003", name: "Smart Watch", seller: "SellerA", aiScore: 90, status: "blocked_ai" },
+        { id: "P004", name: "Laptop ABC", seller: "SellerC", aiScore: 60, status: "current" },
+        { id: "P005", name: "Modern Sofa", seller: "SellerB", aiScore: 82, status: "blocked_batch" },
+        { id: "P006", name: "Men's T-shirt", seller: "SellerA", aiScore: 70, status: "current" },
+        { id: "P007", name: "Sneakers", seller: "SellerC", aiScore: 88, status: "current" },
+        { id: "P008", name: "Sunglasses", seller: "SellerB", aiScore: 65, status: "blocked_ai" },
+        { id: "P009", name: "Bestseller Novel", seller: "SellerA", aiScore: 95, status: "current" },
+        { id: "P010", name: "Cutlery", seller: "SellerC", aiScore: 78, status: "blocked_batch" }
+    ];
+
+    // Function to render products
+    function renderProducts(filteredProducts = products) {
+        const tbody = document.getElementById('productTableBody');
+        if (!tbody) {
+            console.error('Product table body not found');
+            return;
+        }
+        tbody.innerHTML = '';
+        filteredProducts.forEach(product => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>${product.seller}</td>
+                <td>
+                    <input type="number" class="ai-score" value="${product.aiScore}" min="0" max="100">
+                </td>
+                <td>
+                    <select class="status">
+                        <option value="current" ${product.status === 'current' ? 'selected' : ''}>Current</option>
+                        <option value="blocked_ai" ${product.status === 'blocked_ai' ? 'selected' : ''}>Blocked AI</option>
+                        <option value="blocked_batch" ${product.status === 'blocked_batch' ? 'selected' : ''}>Blocked Batch</option>
+                    </select>
+                </td>
+                <td><button class="update" data-id="${product.id}">Update</button></td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // Add update event listeners
+        document.querySelectorAll('.update').forEach(button => {
+            button.addEventListener('click', () => {
+                const id = button.getAttribute('data-id');
+                const row = button.closest('tr');
+                const newScore = parseInt(row.querySelector('.ai-score').value, 10);
+                const newStatus = row.querySelector('.status').value;
+
+                const product = products.find(p => p.id === id);
+                if (product) {
+                    product.aiScore = newScore;
+                    product.status = newStatus;
+                    renderProducts(filteredProducts); // Re-render to reflect changes
+                }
+            });
+        });
+    }
+
+    // Initial render
+    renderProducts();
+
+    // Filter functionality
+    const searchInput = document.getElementById('searchInput');
+    const sellerFilter = document.getElementById('sellerFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const applyFiltersButton = document.getElementById('applyFilters');
+
+    applyFiltersButton.addEventListener('click', () => {
+        let filteredProducts = [...products];
+
+        const searchTerm = searchInput.value.toLowerCase();
+        if (searchTerm) {
+            filteredProducts = filteredProducts.filter(product =>
+                product.name.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        const selectedSeller = sellerFilter.value;
+        if (selectedSeller) {
+            filteredProducts = filteredProducts.filter(product =>
+                product.seller === selectedSeller
+            );
+        }
+
+        const selectedStatus = statusFilter.value;
+        if (selectedStatus) {
+            filteredProducts = filteredProducts.filter(product =>
+                product.status === selectedStatus
+            );
+        }
+
+        renderProducts(filteredProducts);
+    });
+});
+  </script>
+</html>

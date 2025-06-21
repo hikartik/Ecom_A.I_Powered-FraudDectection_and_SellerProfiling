@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Detail - Samsung Galaxy S24 Ultra</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f3f3f3;
+        line-height: 1.5;
+      }
+
+      header {
+        background-color: #131921;
+        color: white;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        padding: 15px 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+      }
+
+      .logo img {
+        width: 100px;
+        margin-right: 0;
+      }
+
+      .location {
+        margin: 0;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .search-bar {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .search-bar select {
+        padding: 12px;
+        border: none;
+        background-color: #f3f3f3;
+        border-right: 1px solid #ddd;
+        font-size: 14px;
+      }
+
+      .search-bar input {
+        flex-grow: 1;
+        padding: 12px;
+        border: none;
+        font-size: 14px;
+      }
+
+      .search-bar button {
+        padding: 12px 18px;
+        background-color: #febd69;
+        border: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .search-bar button:hover {
+        background-color: #f3a847;
+      }
+
+      .user-options {
+        display: flex;
+        align-items: center;
+        margin-left: 0;
+        gap: 15px;
+      }
+
+      .user-options a {
+        color: white;
+        text-decoration: none;
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .user-options a:hover {
+        color: #ffd814;
+      }
+
+      .language-selector {
+        display: flex;
+        align-items: center;
+        margin-right: 0;
+      }
+
+      .language-selector .flag-icon {
+        margin-right: 5px;
+      }
+
+      .language-selector select {
+        background-color: #232f3e;
+        color: white;
+        border: none;
+        padding: 6px;
+        cursor: pointer;
+      }
+
+      .verified-toggle {
+        display: flex;
+        align-items: center;
+        margin-left: 0;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        margin-right: 10px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 20px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #4caf50;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
+      }
+
+      .verified-toggle span {
+        color: white;
+        font-size: 14px;
+      }
+
+      .tooltip {
+        display: none;
+        position: absolute;
+        background-color: #333;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-left: 5px;
+        z-index: 1;
+      }
+
+      .verified-toggle:hover .tooltip {
+        display: block;
+      }
+
+      .main-nav {
+        background-color: #232f3e;
+        padding: 10px 30px;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+
+      .main-nav ul {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .main-nav li {
+        margin-right: 0;
+      }
+
+      .main-nav a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 6px 12px;
+        transition: color 0.3s;
+      }
+
+      .main-nav a:hover {
+        color: #ffd814;
+        background-color: #2a3f5a;
+        border-radius: 3px;
+      }
+
+      .container {
+        display: flex;
+        padding: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        align-items: flex-start;
+        gap: 30px;
+        flex-wrap: wrap;
+      }
+
+      .container2 {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 30px;
+      }
+
+      .container3 {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .product-gallery {
+        width: 45%;
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #e7e7e7;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .main-image {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e7e7e7;
+      }
+
+      .thumbnail-gallery {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .thumbnail-gallery img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+      }
+
+      .thumbnail-gallery img:hover {
+        transform: scale(1.1);
+        border-color: #febd69;
+      }
+
+      .product-details {
+        width: 100%;
+        padding: 20px;
+        background-color: white;
+        border: 1px solid #e7e7e7;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .product-details h1 {
+        font-size: 26px;
+        margin: 0 0 15px;
+        color: #0f1111;
+        font-weight: 500;
+      }
+
+      .rating-ai,
+      .ai-rating {
+        color: #f39c12;
+        margin-bottom: 10px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .price {
+        font-weight: bold;
+        color: #b12704;
+        font-size: 22px;
+        margin-bottom: 15px;
+      }
+
+      .location {
+        font-size: 14px;
+        color: #565959;
+        margin-bottom: 10px;
+      }
+
+      .delivery {
+        color: #007600;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .prime {
+        color: #00a8e1;
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 15px;
+        display: inline-block;
+        padding: 2px 8px;
+        background-color: #f3f3f3;
+        border-radius: 3px;
+      }
+
+      .buttons {
+        margin-top: auto;
+        margin-bottom: 15px;
+      }
+
+      .buttons button {
+        padding: 12px 20px;
+        margin-right: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+      }
+
+      #addToCart {
+        background-color: #ffd814;
+        color: #0f1111;
+      }
+
+      #addToCart:hover {
+        background-color: #f7ca00;
+        transform: translateY(-2px);
+      }
+
+      #buyNow {
+        background-color: #ffa500;
+        color: white;
+      }
+
+      #buyNow:hover {
+        background-color: #e68a00;
+        transform: translateY(-2px);
+      }
+
+      .availability {
+        font-size: 14px;
+        margin-top: 10px;
+        color: #007600;
+        font-weight: 500;
+      }
+
+      .product-description {
+        width: 100%;
+        padding: 20px;
+        background-color: white;
+        margin-top: 20px;
+        border: 1px solid #e7e7e7;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-description h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #0f1111;
+        font-weight: 500;
+      }
+
+      .product-description ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        color: #0f1111;
+      }
+
+      #aplusContent {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #e7e7e7;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+      }
+
+      #aplusContent h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #0f1111;
+      }
+
+      #aplusContent p {
+        font-size: 14px;
+        color: #565959;
+        line-height: 1.6;
+      }
+
+      .related-items {
+        width: 100%;
+        padding: 20px;
+        background-color: white;
+        margin-top: 30px;
+        border: 1px solid #e7e7e7;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .related-items h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #0f1111;
+        font-weight: 500;
+      }
+
+      .product-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+      }
+
+      .product-card {
+        text-align: center;
+        padding: 15px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        transition: box-shadow 0.3s ease;
+      }
+
+      .product-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        margin-bottom: 15px;
+      }
+
+      .product-card p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #0f1111;
+      }
+
+      .product-card .price {
+        color: #b12704;
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+
+      .product-card a {
+        color: #007185;
+        text-decoration: none;
+        font-size: 12px;
+      }
+
+      .product-card a:hover {
+        text-decoration: underline;
+      }
+
+      footer {
+        text-align: center;
+        padding: 15px;
+        background-color: #232f3e;
+        color: white;
+        position: relative;
+        width: 100%;
+        margin-top: 30px;
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+          padding: 15px 20px;
+        }
+
+        .search-bar {
+          width: 100%;
+          margin: 10px 0;
+        }
+
+        .user-options {
+          margin-left: 0;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .main-nav ul {
+          flex-direction: column;
+          gap: 10px;
+          padding: 10px 0;
+        }
+
+        .container {
+          padding: 20px;
+          gap: 20px;
+        }
+
+        .container2 {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .product-gallery,
+        .product-details {
+          width: 100%;
+          margin-right: 0;
+          margin-bottom: 0;
+        }
+
+        .main-image {
+          width: 100%;
+        }
+
+        .product-list {
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .product-card img {
+          height: 120px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .product-details h1 {
+          font-size: 22px;
+        }
+
+        .price {
+          font-size: 18px;
+        }
+
+        .buttons button {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+
+        #addToCart,
+        #buyNow {
+          margin-right: 0;
+        }
+
+        .product-card {
+          padding: 10px;
+        }
+
+        .product-card img {
+          height: 100px;
+        }
+
+        .product-card p {
+          font-size: 12px;
+        }
+
+        .product-card .price {
+          font-size: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .top-bar {
+          padding: 10px;
+          gap: 10px;
+        }
+
+        .search-bar select,
+        .search-bar input,
+        .search-bar button {
+          padding: 8px;
+        }
+
+        .container {
+          padding: 10px;
+        }
+
+        .product-gallery {
+          padding: 15px;
+        }
+
+        .product-details {
+          padding: 15px;
+        }
+
+        .product-description {
+          padding: 15px;
+        }
+
+        .related-items {
+          padding: 15px;
+          margin-top: 20px;
+        }
+
+        .related-items h2 {
+          margin-bottom: 15px;
+        }
+
+        .product-list {
+          gap: 10px;
+        }
+
+        .product-card img {
+          height: 80px;
+        }
+
+        .product-card p {
+          font-size: 10px;
+        }
+
+        .product-card .price {
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="top-bar">
+        <div class="logo">
+          <a href="search.html"
+            ><img src="../assets/amazon_logo.png" alt="Amazon.in"
+          /></a>
+        </div>
+        <div class="location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Deliver to India</span>
+        </div>
+        <div class="search-bar">
+          <select>
+            <option>All</option>
+            <option>Electronics</option>
+            <option>Books</option>
+            <option>Fashion</option>
+          </select>
+          <input type="text" placeholder="Search Amazon.in" />
+          <button><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-options">
+          <div class="language-selector">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg"
+              alt="India Flag"
+              class="flag-icon"
+              width="20"
+            />
+            <select>
+              <option value="en">EN</option>
+              <option value="hi">HI</option>
+            </select>
+          </div>
+          <a href="#">Hello, Sign in<br />Account & Lists</a>
+          <a href="#">Returns<br />& Orders</a>
+          <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+          <div class="verified-toggle">
+            <label class="switch">
+              <input type="checkbox" id="verifiedToggle" />
+              <span class="slider round"></span>
+            </label>
+            <span>Verified Products</span>
+            <!-- <span class="tooltip"
+              >Tab to show only AI verified products based on ranking</span
+            > -->
+          </div>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">All</a></li>
+          <li><a href="#">Today's Deals</a></li>
+          <li><a href="#">Customer Service</a></li>
+          <li><a href="#">Registry</a></li>
+          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#">Sell</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <div class="container">
+        <div class="container2">
+          <div class="product-gallery">
+            <img src="" alt="Product Image" id="mainImage" class="main-image" />
+            <div class="thumbnail-gallery" id="thumbnailGallery">
+              <!-- Thumbnails will be dynamically inserted -->
+            </div>
+          </div>
+          <div class="container3">
+            <div class="product-details">
+              <h1 id="productTitle"></h1>
+              <div class="rating-ai" id="productRating"></div>
+              <div class="ai-rating" id="productAIRating"></div>
+              <p class="price" id="productPrice"></p>
+              <p class="location" id="productLocation"></p>
+              <p class="delivery" id="productDelivery"></p>
+              <p class="prime" id="productPrime"></p>
+              <div class="buttons">
+                <button id="addToCart">Add to Cart</button>
+                <button id="buyNow">Buy Now</button>
+              </div>
+              <div class="availability" id="productAvailability"></div>
+            </div>
+            <div class="product-description">
+              <h2>About this item</h2>
+              <ul id="productSpecs"></ul>
+              <div id="aplusContent"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Related Items Section -->
+        <section class="related-items">
+          <h2>Customers who bought this item also bought</h2>
+          <div class="product-list" id="relatedProductList">
+            <!-- Related products will be dynamically inserted -->
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 OnlineShop.in. All rights reserved.</p>
+    </footer>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Dummy product data
+      const products = [
+        {
+          id: "SG001",
+          name: "Samsung Galaxy S24 Ultra",
+          price: 89999,
+          image:
+            "https://images.unsplash.com/photo-1673505705676-1cdb1db2273f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.5,
+          aiScore: 92,
+          category: "mobiles",
+          prime: true,
+          location: "Ships from India",
+        },
+        {
+          id: "SG002",
+          name: "Samsung Galaxy A54 5G",
+          price: 34999,
+          image:
+            "https://images.unsplash.com/photo-1623609163859-ca93c959b98a?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.2,
+          aiScore: 85,
+          category: "mobiles",
+          prime: false,
+          location: "Ships from India",
+        },
+        {
+          id: "SG003",
+          name: "Samsung Galaxy Z Flip5",
+          price: 99999,
+          image:
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400",
+          rating: 4.7,
+          aiScore: 95,
+          category: "mobiles",
+          prime: true,
+          location: "Ships from India",
+        },
+        {
+          id: "SG004",
+          name: "Samsung Galaxy M34 5G",
+          price: 18999,
+          image:
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.0,
+          aiScore: 80,
+          category: "mobiles",
+          prime: false,
+          location: "Ships from India",
+        },
+        {
+          id: "SG005",
+          name: "Samsung Galaxy Tab S9",
+          price: 69999,
+          image:
+            "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          rating: 4.6,
+          aiScore: 88,
+          category: "tablets",
+          prime: true,
+          location: "Ships from India",
+        },
+        {
+          id: "SG006",
+          name: "Samsung Galaxy A35 5G",
+          price: 25999,
+          image:
+            "https://images.unsplash.com/photo-1605812860427-4024433a70f0?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.3,
+          aiScore: 83,
+          category: "mobiles",
+          prime: false,
+          location: "Ships from India",
+        },
+        {
+          id: "SG007",
+          name: "Samsung Galaxy Tab A9+",
+          price: 22999,
+          image:
+            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400",
+          rating: 4.1,
+          aiScore: 78,
+          category: "tablets",
+          prime: true,
+          location: "Ships from India",
+        },
+      ];
+
+      // Get product ID from URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get("id");
+      const product = products.find((p) => p.id === productId) || products[0]; // Default to first product if ID not found
+
+      // Populate product details
+      document.getElementById("productTitle").textContent = product.name;
+      document.getElementById("productRating").innerHTML = `${"★".repeat(
+        Math.floor(product.rating)
+      )}${product.rating % 1 !== 0 ? "½" : ""} (${product.rating}/5)`;
+      document.getElementById(
+        "productAIRating"
+      ).textContent = `AI Rating: ${product.aiScore}%`;
+      document.getElementById(
+        "productPrice"
+      ).textContent = `₹${product.price.toLocaleString()}`;
+      document.getElementById("productLocation").textContent = product.location;
+      document.getElementById("productDelivery").textContent =
+        "Get it by Tomorrow";
+      document.getElementById("productPrime").textContent = product.prime
+        ? "Prime"
+        : "";
+      document.getElementById("productAvailability").textContent = "In Stock";
+      document.getElementById("mainImage").src = product.image;
+
+      // Add thumbnails
+      const thumbnailGallery = document.getElementById("thumbnailGallery");
+      for (let i = 0; i < 3; i++) {
+        const thumb = document.createElement("img");
+        thumb.src = product.image;
+        thumb.addEventListener(
+          "click",
+          () => (document.getElementById("mainImage").src = product.image)
+        );
+        thumbnailGallery.appendChild(thumb);
+      }
+
+      // Add specifications
+      const specs = [
+        "12GB RAM, 256GB Storage",
+        "6.8-inch Dynamic AMOLED 2X Display",
+        "50MP Triple Camera System",
+        "5000mAh Battery with Fast Charging",
+      ];
+      const specList = document.getElementById("productSpecs");
+      specs.forEach((spec) => {
+        const li = document.createElement("li");
+        li.textContent = spec;
+        specList.appendChild(li);
+      });
+
+      // Add basic A+ content
+      const aplusContent = document.getElementById("aplusContent");
+      aplusContent.innerHTML = `
+        <h3>Why Choose This Product?</h3>
+        <p>Experience top-tier performance with advanced AI features and a stunning display. Perfect for gaming, photography, and multitasking.</p>
+    `;
+
+      // Search functionality
+      const searchButton = document.querySelector(".search-bar button");
+      const searchInput = document.querySelector(".search-bar input");
+      searchButton.addEventListener("click", () => {
+        window.location.href = `search.html?search=${searchInput.value}`;
+      });
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") searchButton.click();
+      });
+
+      // Add to Cart and Buy Now
+      document
+        .getElementById("addToCart")
+        .addEventListener("click", () => alert("Added to Cart!"));
+      document
+        .getElementById("buyNow")
+        .addEventListener("click", () => alert("Proceeding to Checkout!"));
+
+      // Verified Products Toggle
+      const verifiedToggle = document.getElementById("verifiedToggle");
+      if (verifiedToggle) {
+        verifiedToggle.addEventListener("change", () => {
+          console.log("Verified toggle changed:", verifiedToggle.checked);
+        });
+      }
+
+      // Populate related items
+      const relatedProductList = document.getElementById("relatedProductList");
+      const relatedProducts = products
+        .filter((p) => p.id !== productId)
+        .slice(0, 4); // Exclude current product, take 4 others
+      relatedProducts.forEach((p) => {
+        const productCard = document.createElement("div");
+        productCard.classList.add("product-card");
+        productCard.innerHTML = `
+            <img src="${p.image}" alt="${p.name}">
+            <p>${p.name}</p>
+            <p class="price">₹${p.price.toLocaleString()}</p>
+            <a href="product_detail.html?id=${p.id}">See details</a>
+        `;
+        relatedProductList.appendChild(productCard);
+      });
+    });
+  </script>
+</html>
