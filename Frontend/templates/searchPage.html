@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Results - Samsung Galaxy Products</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        line-height: 1.6;
+        color: #0f1111;
+      }
+
+      header {
+        background: linear-gradient(to bottom, #232f3e 0%, #1a2532 100%);
+        padding: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        color: white;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 8px 20px;
+        gap: 15px;
+      }
+
+      .logo img {
+        height: 50px;
+        margin-right: 0;
+        cursor: pointer;
+      }
+
+      .location {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .location:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .search-bar {
+        display: flex;
+        flex-grow: 1;
+        max-width: 700px;
+        margin: 0 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .search-bar select {
+        padding: 12px 16px;
+        border: none;
+        background-color: #f3f3f3;
+        font-size: 14px;
+        color: #555;
+        cursor: pointer;
+        border-right: 1px solid #ddd;
+        min-width: 80px;
+      }
+
+      .search-bar input {
+        flex-grow: 1;
+        padding: 12px 16px;
+        border: none;
+        font-size: 16px;
+        outline: none;
+      }
+
+      .search-bar button {
+        padding: 12px 20px;
+        background: linear-gradient(to bottom, #febd69 0%, #f3a847 100%);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 60px;
+      }
+
+      .search-bar button:hover {
+        background: linear-gradient(to bottom, #f3a847 0%, #e6a23c 100%);
+        transform: translateY(-1px);
+      }
+
+      .user-options {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        font-size: 14px;
+      }
+
+      .user-options a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+      }
+
+      .user-options a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .user-options .cart {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 500;
+      }
+
+      .language-selector {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .language-selector:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .language-selector select {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .language-selector select option {
+        background-color: #232f3e;
+        color: white;
+      }
+
+      .verified-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        position: relative;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 20px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #00a8e1;
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+
+      .main-nav {
+        background-color: #37475a;
+        border-top: 1px solid #4a5c6b;
+      }
+
+      .main-nav ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        margin: 0;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+        gap: 0;
+      }
+
+      .main-nav ul li {
+        margin: 0;
+      }
+
+      .main-nav ul li a {
+        color: white;
+        text-decoration: none;
+        padding: 12px 16px;
+        display: block;
+        font-size: 14px;
+        transition: background-color 0.2s;
+        border-radius: 0;
+      }
+
+      .main-nav ul li a:hover {
+        background-color: #4a5c6b;
+      }
+
+      .container {
+        display: flex;
+        padding: 120px 20px 30px;
+        max-width: 1400px;
+        margin: 0 auto;
+        gap: 20px;
+      }
+
+      .sidebar {
+        width: 280px;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        height: fit-content;
+        position: sticky;
+        top: 140px;
+      }
+
+      .sidebar h3 {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #0f1111;
+        font-weight: 600;
+      }
+
+      .filter-section {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e7e7e7;
+      }
+
+      .filter-section:last-child {
+        border-bottom: none;
+      }
+
+      .filter-section h4 {
+        font-size: 16px;
+        margin: 0 0 15px 0;
+        color: #0f1111;
+        font-weight: 600;
+      }
+
+      .filter-section label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #0f1111;
+        transition: color 0.2s;
+      }
+
+      .filter-section label:hover {
+        color: #c45500;
+      }
+
+      .filter-section input[type="checkbox"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+        accent-color: #c45500;
+      }
+
+      .sidebar button {
+        padding: 12px 20px;
+        background: linear-gradient(to bottom, #f7dfa5 0%, #f0c14b 100%);
+        border: 1px solid #a88734;
+        border-radius: 6px;
+        width: 100%;
+        margin-top: 20px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        font-weight: 500;
+        color: #111;
+      }
+
+      .sidebar button:hover {
+        background: linear-gradient(to bottom, #f0c14b 0%, #e6a23c 100%);
+        border-color: #a88734;
+        transform: translateY(-1px);
+      }
+
+      .content {
+        flex-grow: 1;
+      }
+
+      .sort-bar {
+        background-color: white;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .sort-bar select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        font-size: 14px;
+        cursor: pointer;
+        background-color: white;
+      }
+
+      .results {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+
+      .product-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+      }
+
+      .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-color: #e7e7e7;
+      }
+
+      .product-card .color-stripe {
+        height: 4px;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .product-card.green .color-stripe {
+        background: linear-gradient(90deg, #00a651 0%, #00d4aa 100%);
+      }
+
+      .product-card.orange .color-stripe {
+        background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+      }
+
+      .product-card.red .color-stripe {
+        background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 100%);
+      }
+
+      .product-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: contain;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        transition: transform 0.2s;
+      }
+
+      .product-card:hover img {
+        transform: scale(1.05);
+      }
+
+      .product-card p {
+        margin: 8px 0;
+        font-size: 14px;
+        color: #0f1111;
+        line-height: 1.4;
+      }
+
+      .product-card .price {
+        font-weight: 700;
+        color: #b12704;
+        font-size: 18px;
+        margin: 12px 0;
+      }
+
+      .product-card .rating {
+        color: #f39c12;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .product-card .delivery {
+        color: #007600;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .product-card .prime {
+        color: #00a8e1;
+        font-size: 13px;
+        font-weight: 600;
+        background-color: #f0f8ff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        margin: 8px 0;
+      }
+
+      .product-card button {
+        background: linear-gradient(to bottom, #f7dfa5 0%, #f0c14b 100%);
+        border: 1px solid #a88734;
+        padding: 10px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 14px;
+        font-weight: 500;
+        color: #111;
+        transition: all 0.2s;
+        margin-top: 15px;
+      }
+
+      .product-card button:hover {
+        background: linear-gradient(to bottom, #f0c14b 0%, #e6a23c 100%);
+        border-color: #a88734;
+        transform: translateY(-1px);
+      }
+
+      .pagination {
+        padding: 20px;
+        text-align: center;
+        background-color: white;
+        margin-top: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .pagination button {
+        padding: 10px 16px;
+        margin: 0 5px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        min-width: 40px;
+      }
+
+      .pagination button:hover {
+        background-color: #f8f9fa;
+        border-color: #c45500;
+      }
+
+      .pagination button.active {
+        background-color: #c45500;
+        color: white;
+        border-color: #c45500;
+        font-weight: 600;
+      }
+
+      footer {
+        text-align: center;
+        padding: 30px 20px;
+        background: linear-gradient(to bottom, #232f3e 0%, #1a2532 100%);
+        color: white;
+        margin-top: 50px;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      footer p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .container {
+          padding: 120px 15px 30px;
+        }
+
+        .results {
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+          padding: 15px 20px;
+        }
+
+        .search-bar {
+          width: 100%;
+          max-width: none;
+          margin: 10px 0;
+        }
+
+        .user-options {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .main-nav ul {
+          flex-direction: column;
+          padding: 10px 0;
+          gap: 0;
+        }
+
+        .container {
+          flex-direction: column;
+          padding: 180px 15px 20px;
+          gap: 20px;
+        }
+
+        .sidebar {
+          width: 100%;
+          position: static;
+        }
+
+        .results {
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+
+        .product-card img {
+          height: 180px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .top-bar {
+          padding: 10px 15px;
+        }
+
+        .search-bar select,
+        .search-bar input,
+        .search-bar button {
+          padding: 10px;
+        }
+
+        .main-nav ul {
+          padding: 5px 15px;
+        }
+
+        .container {
+          padding: 180px 10px 10px;
+        }
+
+        .sidebar {
+          padding: 15px;
+        }
+
+        .sort-bar {
+          padding: 12px 15px;
+        }
+
+        .results {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 15px;
+        }
+
+        .product-card {
+          padding: 15px;
+        }
+
+        .product-card img {
+          height: 160px;
+        }
+
+        .product-card p {
+          font-size: 13px;
+        }
+
+        .product-card .price {
+          font-size: 16px;
+        }
+
+        .pagination {
+          padding: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .top-bar {
+          gap: 10px;
+        }
+
+        .search-bar {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .search-bar select,
+        .search-bar input,
+        .search-bar button {
+          width: 100%;
+          margin-bottom: 5px;
+        }
+
+        .user-options {
+          gap: 5px;
+        }
+
+        .main-nav ul {
+          gap: 0;
+        }
+
+        .container {
+          padding: 200px 5px 5px;
+        }
+
+        .sidebar {
+          padding: 12px;
+        }
+
+        .sort-bar {
+          padding: 10px 12px;
+        }
+
+        .results {
+          grid-template-columns: 1fr;
+          gap: 15px;
+        }
+
+        .product-card {
+          padding: 12px;
+        }
+
+        .product-card img {
+          height: 140px;
+        }
+
+        .product-card p {
+          font-size: 12px;
+        }
+
+        .product-card .price {
+          font-size: 15px;
+        }
+
+        .product-card button {
+          padding: 8px 12px;
+          font-size: 13px;
+        }
+
+        .pagination {
+          padding: 12px;
+        }
+
+        .pagination button {
+          padding: 8px 12px;
+          margin: 0 3px;
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="top-bar">
+        <div class="logo">
+          <a href="search.html"
+            ><img src="../assets/amazon_logo.png" alt="Amazon.in"
+          /></a>
+        </div>
+        <div class="location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Deliver to India</span>
+        </div>
+        <div class="search-bar">
+          <select>
+            <option>All</option>
+            <option>Electronics</option>
+            <option>Books</option>
+            <option>Fashion</option>
+          </select>
+          <input type="text" placeholder="Search Amazon.in" />
+          <button><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-options">
+          <div class="language-selector">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg"
+              alt="India Flag"
+              class="flag-icon"
+              width="20"
+            />
+            <select>
+              <option value="en">EN</option>
+              <option value="hi">HI</option>
+            </select>
+          </div>
+          <a href="#">Hello, Sign in<br />Account & Lists</a>
+          <a href="#">Returns<br />& Orders</a>
+          <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+          <div class="verified-toggle">
+            <label class="switch">
+              <input type="checkbox" id="verifiedToggle" />
+              <span class="slider round"></span>
+            </label>
+            <span>Verified Products</span>
+            <span class="tooltip"
+              >Tab to show only AI verified products based on ranking</span
+            >
+          </div>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">All</a></li>
+          <li><a href="#">Today's Deals</a></li>
+          <li><a href="#">Customer Service</a></li>
+          <li><a href="#">Registry</a></li>
+          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#">Sell</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="container">
+        <aside class="sidebar">
+          <h3>Filters</h3>
+          <div class="filter-section">
+            <h4>Category</h4>
+            <label
+              ><input type="checkbox" class="filter-category" value="mobiles" />
+              Mobiles</label
+            >
+            <label
+              ><input type="checkbox" class="filter-category" value="tablets" />
+              Tablets</label
+            >
+          </div>
+          <div class="filter-section">
+            <h4>Price</h4>
+            <label
+              ><input type="checkbox" class="filter-price" value="under20000" />
+              Under ₹20,000</label
+            >
+            <label
+              ><input
+                type="checkbox"
+                class="filter-price"
+                value="20000to50000"
+              />
+              ₹20,000 - ₹50,000</label
+            >
+            <label
+              ><input type="checkbox" class="filter-price" value="above50000" />
+              Above ₹50,000</label
+            >
+          </div>
+          <div class="filter-section">
+            <h4>AI Score</h4>
+            <label
+              ><input type="checkbox" class="filter-aiScore" value="above80" />
+              Above 80</label
+            >
+          </div>
+          <button id="applyFilters">Apply Filters</button>
+        </aside>
+        <section class="content">
+          <div class="sort-bar">
+            <select id="sortFilter">
+              <option value="relevance">Sort by: Relevance</option>
+              <option value="priceLowHigh">Price: Low to High</option>
+              <option value="priceHighLow">Price: High to Low</option>
+              <option value="aiScoreHighLow">AI Score: High to Low</option>
+              <option value="aiScoreLowHigh">AI Score: Low to High</option>
+            </select>
+          </div>
+          <section class="results" id="results">
+            <!-- Products will be dynamically inserted here -->
+          </section>
+          <div class="pagination" id="pagination">
+            <!-- Pagination will be dynamically inserted here -->
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <p>© 2025 OnlineShop.in. All rights reserved.</p>
+    </footer>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Dummy product data for Samsung Galaxy products
+      const products = [
+        {
+          id: "SG001",
+          name: "Samsung Galaxy S24 Ultra",
+          price: 89999,
+          image:
+            "https://images.unsplash.com/photo-1673505705676-1cdb1db2273f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.5,
+          aiScore: 92,
+          category: "mobiles",
+          prime: true,
+        },
+        {
+          id: "SG002",
+          name: "Samsung Galaxy A54 5G",
+          price: 34999,
+          image:
+            "https://images.unsplash.com/photo-1623609163859-ca93c959b98a?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.2,
+          aiScore: 85,
+          category: "mobiles",
+          prime: false,
+        },
+        {
+          id: "SG003",
+          name: "Samsung Galaxy Z Flip5",
+          price: 99999,
+          image:
+            "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400",
+          rating: 4.7,
+          aiScore: 95,
+          category: "mobiles",
+          prime: true,
+        },
+        {
+          id: "SG004",
+          name: "Samsung Galaxy M34 5G",
+          price: 18999,
+          image:
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.0,
+          aiScore: 80,
+          category: "mobiles",
+          prime: false,
+        },
+        {
+          id: "SG005",
+          name: "Samsung Galaxy Tab S9",
+          price: 69999,
+          image:
+            "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          rating: 4.6,
+          aiScore: 88,
+          category: "tablets",
+          prime: true,
+        },
+        {
+          id: "SG006",
+          name: "Samsung Galaxy A35 5G",
+          price: 25999,
+          image:
+            "https://images.unsplash.com/photo-1605812860427-4024433a70f0?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          rating: 4.3,
+          aiScore: 83,
+          category: "mobiles",
+          prime: false,
+        },
+        {
+          id: "SG007",
+          name: "Samsung Galaxy Tab A9+",
+          price: 22999,
+          image:
+            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400",
+          rating: 4.1,
+          aiScore: 78,
+          category: "tablets",
+          prime: true,
+        },
+      ];
+
+      let currentPage = 1;
+      const itemsPerPage = 5;
+
+      // Function to render products
+      function renderProducts(productList = products, page = currentPage) {
+        const results = document.getElementById("results");
+        const pagination = document.getElementById("pagination");
+        if (!results || !pagination) {
+          console.error("Results or pagination container not found");
+          return;
+        }
+
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedProducts = productList.slice(startIndex, endIndex);
+
+        results.innerHTML = "";
+        paginatedProducts.forEach((product) => {
+          const card = document.createElement("div");
+          card.classList.add("product-card");
+          const stripe = document.createElement("div");
+          stripe.classList.add("color-stripe");
+          if (product.aiScore > 80) {
+            card.classList.add("green");
+          } else if (product.aiScore >= 60) {
+            card.classList.add("orange");
+          } else {
+            card.classList.add("red");
+          }
+          card.appendChild(stripe);
+          card.innerHTML += `
+                <img src="${product.image}" alt="${product.name}">
+                <p>${product.name}</p>
+                <p class="price">₹${product.price.toLocaleString()}</p>
+                <p class="rating">${"★".repeat(Math.floor(product.rating))}${
+            product.rating % 1 !== 0 ? "½" : ""
+          } (${product.rating}/5)</p>
+                <p class="delivery">Get it by Tomorrow</p>
+                ${product.prime ? '<p class="prime">Prime</p>' : ""}
+                <button class="view-details" data-id="${
+                  product.id
+                }">View Details</button>
+            `;
+          results.appendChild(card);
+        });
+
+        // Event delegation for "View Details" buttons
+        results.addEventListener("click", (e) => {
+          const button = e.target.closest(".view-details");
+          if (button) {
+            const productId = button.getAttribute("data-id");
+            if (productId) {
+              window.location.href = `productDetails.html?id=${productId}`;
+            } else {
+              console.error("Product ID not found for redirection");
+            }
+          }
+        });
+
+        // Pagination
+        const totalPages = Math.ceil(productList.length / itemsPerPage);
+        pagination.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement("button");
+          button.textContent = i;
+          button.addEventListener("click", () => {
+            currentPage = i;
+            renderProducts(productList, currentPage);
+          });
+          if (i === currentPage) button.classList.add("active");
+          pagination.appendChild(button);
+        }
+      }
+
+      // Initial render with search term "samsung galaxy"
+      renderProducts();
+
+      // Sort functionality
+      const sortFilter = document.getElementById("sortFilter");
+      sortFilter.addEventListener("change", () => {
+        let sortedProducts = [...products];
+        switch (sortFilter.value) {
+          case "priceLowHigh":
+            sortedProducts.sort((a, b) => a.price - b.price);
+            break;
+          case "priceHighLow":
+            sortedProducts.sort((a, b) => b.price - a.price);
+            break;
+          case "aiScoreHighLow":
+            sortedProducts.sort((a, b) => b.aiScore - a.aiScore);
+            break;
+          case "aiScoreLowHigh":
+            sortedProducts.sort((a, b) => a.aiScore - b.aiScore);
+            break;
+          default:
+            // Relevance (no sorting)
+            break;
+        }
+        currentPage = 1; // Reset to first page on sort
+        renderProducts(sortedProducts, currentPage);
+      });
+
+      // Search functionality
+      const searchInput = document.querySelector(".search-bar input");
+      const searchButton = document.querySelector(".search-bar button");
+      searchButton.addEventListener("click", () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredProducts = products.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm)
+        );
+        currentPage = 1; // Reset to first page on search
+        renderProducts(filteredProducts, currentPage);
+      });
+
+      // Trigger search on Enter key
+      searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          searchButton.click();
+        }
+      });
+
+      // Filter functionality
+      const applyFiltersButton = document.getElementById("applyFilters");
+      applyFiltersButton.addEventListener("click", () => {
+        let filteredProducts = [...products];
+
+        // Category filter
+        const categoryFilters = document.querySelectorAll(
+          ".filter-category:checked"
+        );
+        if (categoryFilters.length) {
+          const categories = Array.from(categoryFilters).map((cb) => cb.value);
+          filteredProducts = filteredProducts.filter((product) =>
+            categories.includes(product.category)
+          );
+        }
+
+        // Price filter
+        const priceFilters = document.querySelectorAll(".filter-price:checked");
+        if (priceFilters.length) {
+          filteredProducts = filteredProducts.filter((product) => {
+            const price = product.price;
+            for (let filter of priceFilters) {
+              switch (filter.value) {
+                case "under20000":
+                  return price < 20000;
+                case "20000to50000":
+                  return price >= 20000 && price <= 50000;
+                case "above50000":
+                  return price > 50000;
+              }
+            }
+            return false;
+          });
+        }
+
+        // AI Score filter
+        const aiScoreFilters = document.querySelectorAll(
+          ".filter-aiScore:checked"
+        );
+        if (aiScoreFilters.length) {
+          filteredProducts = filteredProducts.filter((product) => {
+            for (let filter of aiScoreFilters) {
+              switch (filter.value) {
+                case "above80":
+                  return product.aiScore > 80;
+              }
+            }
+            return false;
+          });
+        }
+
+        currentPage = 1; // Reset to first page on filter
+        renderProducts(filteredProducts, currentPage);
+      });
+    });
+  </script>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon India - Online Shopping</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f3f3f3;
+      }
+
+      /* Header */
+      header {
+        background-color: #131921;
+        color: white;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+      }
+
+      .logo img {
+        width: 100px;
+      }
+
+      .location {
+        margin: 0 20px;
+        cursor: pointer;
+      }
+
+      .search-bar {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      .search-bar select {
+        padding: 10px;
+        border: none;
+        background-color: #f3f3f3;
+        border-radius: 4px 0 0 4px;
+      }
+
+      .search-bar input {
+        flex-grow: 1;
+        padding: 10px;
+        border: none;
+      }
+
+      .search-bar button {
+        padding: 10px;
+        background-color: #febd69;
+        border: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+      }
+
+      .user-options {
+        display: flex;
+        align-items: center;
+        margin-left: 20px;
+      }
+
+      .user-options a {
+        color: white;
+        text-decoration: none;
+        margin: 0 15px;
+        font-size: 14px;
+      }
+
+      .language-selector {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+      }
+
+      .language-selector .flag-icon {
+        margin-right: 5px;
+      }
+
+      .language-selector select {
+        background-color: #232f3e;
+        color: white;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      .verified-toggle {
+        display: flex;
+        align-items: center;
+        margin-left: 15px;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+        margin-right: 10px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 20px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        -webkit-transition: 0.4s;
+        transition: 0.4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: #4caf50;
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
+      }
+
+      .verified-toggle span {
+        color: white;
+        font-size: 14px;
+      }
+
+      .tooltip {
+        display: none;
+        position: absolute;
+        background-color: #333;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        margin-left: 5px;
+      }
+
+      .verified-toggle:hover .tooltip {
+        /* display: block; */
+      }
+
+      .main-nav {
+        background-color: #232f3e;
+        padding: 10px 20px;
+      }
+
+      .main-nav ul {
+        list-style: none;
+        display: flex;
+      }
+
+      .main-nav li {
+        margin-right: 20px;
+      }
+
+      .main-nav a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      /* Carousel */
+      .carousel {
+        position: relative;
+        margin-bottom: 20px;
+      }
+
+      .carousel-container {
+        overflow: hidden;
+      }
+
+      .carousel-slide {
+        display: none;
+        width: 100%;
+        height: 400px;
+      }
+
+      .carousel-slide.active {
+        display: block;
+      }
+
+      .carousel-slide img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+
+      .carousel-prev,
+      .carousel-next {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+      }
+
+      .carousel-prev {
+        left: 10px;
+      }
+
+      .carousel-next {
+        right: 10px;
+      }
+
+      /* Categories */
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .category-card {
+        background-color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-card img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+
+      .category-card a {
+        color: #007185;
+        text-decoration: none;
+      }
+
+      /* Featured Products */
+      .featured-products {
+        padding: 20px;
+        background-color: white;
+        margin: 20px;
+        border-radius: 4px;
+      }
+
+      .featured-products h2 {
+        margin-bottom: 20px;
+      }
+
+      .product-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+      }
+
+      .product-card {
+        text-align: center;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .product-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+      }
+
+      .product-card p {
+        margin: 5px 0;
+        font-size: 14px;
+      }
+
+      .product-card .price {
+        color: #b12704;
+        font-weight: bold;
+      }
+
+      .product-card a {
+        color: #007185;
+        text-decoration: none;
+        font-size: 12px;
+      }
+
+      /* Footer */
+      footer {
+        background-color: #232f3e;
+        color: white;
+        padding: 40px 20px;
+      }
+
+      .footer-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .footer-links h4 {
+        margin-bottom: 10px;
+      }
+
+      .footer-links ul {
+        list-style: none;
+      }
+
+      .footer-links a {
+        color: #ddd;
+        text-decoration: none;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        background-color: #131921;
+        padding: 20px;
+        font-size: 12px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .top-bar {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .search-bar {
+          width: 100%;
+          margin: 10px 0;
+        }
+
+        .user-options {
+          margin-left: 0;
+          flex-wrap: wrap;
+        }
+
+        .main-nav ul {
+          flex-direction: column;
+        }
+
+        .main-nav li {
+          margin-bottom: 10px;
+        }
+
+        .product-list {
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .product-card img {
+          height: 120px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="top-bar">
+        <div class="logo">
+          <a href="#"><img src="assets/amazon_logo.png" alt="Amazon.in" /></a>
+        </div>
+        <div class="location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Deliver to India</span>
+        </div>
+        <div class="search-bar">
+          <select>
+            <option>All</option>
+            <option>Electronics</option>
+            <option>Books</option>
+            <option>Fashion</option>
+          </select>
+          <input type="text" placeholder="Search Amazon.in" />
+          <button><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-options">
+          <div class="language-selector">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg"
+              alt="India Flag"
+              class="flag-icon"
+              width="20"
+            />
+            <select>
+              <option value="en">EN</option>
+              <option value="hi">HI</option>
+            </select>
+          </div>
+          <a href="#">Hello, Sign in<br />Account & Lists</a>
+          <a href="#">Returns<br />& Orders</a>
+          <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> Cart</a>
+          <div class="verified-toggle">
+            <label class="switch">
+              <input type="checkbox" id="verifiedToggle" />
+              <span class="slider round"></span>
+            </label>
+            <span>Verified Products</span>
+            <span class="tooltip"
+              >Tab to show only AI verified products based on ranking</span
+            >
+          </div>
+        </div>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#">All</a></li>
+          <li><a href="#">Today's Deals</a></li>
+          <li><a href="#">Customer Service</a></li>
+          <li><a href="#">Registry</a></li>
+          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#">Sell</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Carousel -->
+      <section class="carousel">
+        <div class="carousel-container">
+          <!-- <div class="carousel-slide active">
+                    <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400" alt="Electronics Banner">
+                </div> -->
+          <div class="carousel-slide" active>
+            <img
+              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400"
+              alt="Fashion Banner"
+            />
+          </div>
+          <div class="carousel-slide">
+            <img
+              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&h=400"
+              alt="Home Banner"
+            />
+          </div>
+        </div>
+        <button class="carousel-prev">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-next">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </section>
+
+      <!-- Product Categories -->
+      <section class="categories">
+        <div class="category-card">
+          <h3>Electronics</h3>
+          <img
+            src="https://images.unsplash.com/photo-1526738549149-8e07eca6c147?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Electronics"
+          />
+          <a href="#">Shop now</a>
+        </div>
+        <div class="category-card">
+          <h3>Fashion</h3>
+          <img
+            src="https://images.unsplash.com/photo-1574201635302-388dd92a4c3f?q=80&w=765&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Fashion"
+          />
+          <a href="#">Shop now</a>
+        </div>
+        <div class="category-card">
+          <h3>Home & Kitchen</h3>
+          <img
+            src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=958&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Home"
+          />
+          <a href="#">Shop now</a>
+        </div>
+        <div class="category-card">
+          <h3>Books</h3>
+          <img
+            src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=200"
+            alt="Books"
+          />
+          <a href="#">Shop now</a>
+        </div>
+      </section>
+
+      <!-- Featured Products -->
+      <section class="featured-products">
+        <h2>Today's Deals</h2>
+        <div class="product-list" id="productList">
+          <!-- Products will be dynamically inserted here -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <div>
+          <h4>Get to Know Us</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press Releases</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Connect with Us</h4>
+          <ul>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Make Money with Us</h4>
+          <ul>
+            <li><a href="#">Sell on Amazon</a></li>
+            <li><a href="#">Become an Affiliate</a></li>
+            <li><a href="#">Advertise Your Products</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Let Us Help You</h4>
+          <ul>
+            <li><a href="#">Your Account</a></li>
+            <li><a href="#">Returns Centre</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 1996-2025, Amazon.com, Inc. or its affiliates</p>
+      </div>
+    </footer>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Carousel functionality
+      const slides = document.querySelectorAll(".carousel-slide");
+      const prevButton = document.querySelector(".carousel-prev");
+      const nextButton = document.querySelector(".carousel-next");
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle("active", i === index);
+        });
+      }
+
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+      }
+
+      nextButton.addEventListener("click", nextSlide);
+      prevButton.addEventListener("click", prevSlide);
+
+      // Auto-slide every 10000 seconds
+      setInterval(nextSlide, 10000);
+
+      // Initialize first slide
+      showSlide(currentSlide);
+
+      // Dummy product data with AI scores
+      const products = [
+        {
+          name: "Smartphone XYZ",
+          price: "₹25,999",
+          image:
+            "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          aiScore: 85,
+        },
+        {
+          name: "Wireless Headphones",
+          price: "₹2,499",
+          image:
+            "https://plus.unsplash.com/premium_photo-1678099940967-73fe30680949?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 75,
+        },
+        {
+          name: "Smart Watch",
+          price: "₹4,999",
+          image:
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 90,
+        },
+        {
+          name: "Laptop ABC",
+          price: "₹65,999",
+          image:
+            "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 60,
+        },
+        {
+          name: "Modern Sofa",
+          price: "₹45,999",
+          image:
+            "https://images.unsplash.com/photo-1630585308572-f53438fc684f?q=80&w=821&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 82,
+        },
+        {
+          name: "Men's T-shirt",
+          price: "₹799",
+          image:
+            "https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 70,
+        },
+        {
+          name: "Sneakers",
+          price: "₹3,499",
+          image:
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          aiScore: 88,
+        },
+        {
+          name: "Sunglasses",
+          price: "₹1,299",
+          image:
+            "https://images.unsplash.com/photo-1511499767150-a48a237f0083?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 65,
+        },
+        {
+          name: "Bestseller Novel",
+          price: "₹499",
+          image:
+            "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          aiScore: 95,
+        },
+        {
+          name: "Cutlery",
+          price: "₹2,999",
+          image:
+            "https://plus.unsplash.com/premium_photo-1714643044455-5366228ad90e?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 78,
+        },
+        {
+          name: "Queen Bed",
+          price: "₹29,999",
+          image:
+            "https://plus.unsplash.com/premium_photo-1671269943825-e45b177add8f?q=80&w=726&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 85,
+        },
+        {
+          name: "Table Lamp",
+          price: "₹1,499",
+          image:
+            "https://images.unsplash.com/photo-1580130281320-0ef0754f2bf7?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 72,
+        },
+        {
+          name: "Tablet DEF",
+          price: "₹15,999",
+          image:
+            "https://images.unsplash.com/photo-1589739900869-082b93d8f224?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjJ8fHRhYmxldHxlbnwwfHwwfHx8MA%3D%3D",
+          aiScore: 80,
+        },
+        {
+          name: "Travel Backpack",
+          price: "₹2,799",
+          image:
+            "https://images.unsplash.com/photo-1673505705676-1cdb1db2273f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHRyYXZlbCUyMGJhY2twYWNrfGVufDB8fDB8fHww",
+          aiScore: 68,
+        },
+        {
+          name: "Running Shoes",
+          price: "₹4,999",
+          image:
+            "https://images.unsplash.com/photo-1512374382149-233c42b6a83b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHNob2VzfGVufDB8fDB8fHww",
+          aiScore: 92,
+        },
+        {
+          name: "Analog Watch",
+          price: "₹3,999",
+          image:
+            "https://images.unsplash.com/photo-1696774690902-6e2057307e20?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 77,
+        },
+        {
+          name: "Cookbook",
+          price: "₹799",
+          image:
+            "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200",
+          aiScore: 89,
+        },
+        {
+          name: "Blender",
+          price: "₹3,499",
+          image:
+            "https://images.unsplash.com/photo-1593421970636-570fcb157915?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 63,
+        },
+        {
+          name: "Coffee Table",
+          price: "₹9,999",
+          image:
+            "https://images.unsplash.com/photo-1601276861758-2d9c5ca69a17?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 94,
+        },
+        {
+          name: "Curtains",
+          price: "₹1,999",
+          image:
+            "https://plus.unsplash.com/premium_photo-1673152979215-69b97746b05e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 71,
+        },
+        {
+          name: "DSLR Camera",
+          price: "₹49,999",
+          image:
+            "https://images.unsplash.com/photo-1520549233664-03f65c1d1327?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 87,
+        },
+        {
+          name: "Women's Dress",
+          price: "₹1,499",
+          image:
+            "https://images.unsplash.com/photo-1623609163859-ca93c959b98a?q=80&w=686&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 66,
+        },
+        {
+          name: "Ankle Boots",
+          price: "₹5,999",
+          image:
+            "https://images.unsplash.com/photo-1605812860427-4024433a70fd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Ym9vdHN8ZW58MHx8MHx8fDA%3D",
+          aiScore: 91,
+        },
+        {
+          name: "Self-help Book",
+          price: "₹599",
+          image:
+            "https://images.unsplash.com/photo-1658842042844-eeb5ad17b7d3?q=80&w=1229&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          aiScore: 83,
+        },
+      ];
+
+      // Function to render products
+      function renderProducts(filteredProducts = products) {
+        const productList = document.getElementById("productList");
+        if (!productList) {
+          console.error("Product list container not found");
+          return;
+        }
+        productList.innerHTML = ""; // Clear existing products
+        filteredProducts.forEach((product) => {
+          const productCard = document.createElement("div");
+          productCard.classList.add("product-card");
+          productCard.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <p>${product.name}</p>
+                <p class="price">${product.price}</p>
+                <a href="#">See details</a>
+            `;
+          productList.appendChild(productCard);
+        });
+      }
+
+      // Initial render
+      renderProducts();
+
+      // Verified Products Toggle
+      const verifiedToggle = document.getElementById("verifiedToggle");
+      if (verifiedToggle) {
+        verifiedToggle.addEventListener("change", () => {
+          if (verifiedToggle.checked) {
+            const verifiedProducts = products.filter(
+              (product) => product.aiScore > 80
+            );
+            renderProducts(verifiedProducts);
+          } else {
+            renderProducts();
+          }
+        });
+      } else {
+        console.error("Verified toggle not found");
+      }
+    });
+  </script>
+</html>
