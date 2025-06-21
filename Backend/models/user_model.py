@@ -1,11 +1,9 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Literal
-from uuid import uuid4
+from typing import Literal, Optional
 from datetime import datetime
-import asyncio
 
-# 1) Pydantic v2‐style model
-class User(BaseModel):
+# 🔹 Shared fields for all user models
+class UserBase(BaseModel):
     name: str
     type: Literal["seller", "admin", "customer"]
     email: EmailStr
@@ -13,44 +11,32 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-    # No Config block needed for this simple use case
+# 🔹 Used when registering a new user (input model)
+class UserCreate(UserBase):
+    password: str
 
 
+# 🔹 Used during login (input model)
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
-# 2) Mongo setup
 
-from database import db  # assumes you're running from the backend/ folder
-users = db["users"]
+# 🔹 Internal model: used to store in DB with hashed password
+class UserInDB(UserBase):
+    hashed_password: str
 
-async def init_indexes():
-    await users.create_index("email", unique=True)
 
-# 3) Standalone test
-if __name__ == "__main__":
-    async def _test():
-        print("🔎 Testing User model and MongoDB…")
-        await init_indexes()
+# 🔹 Output model: for returning public-safe data (excludes password)
+class UserOut(BaseModel):
+    id: Optional[str]
+    name: str
+    type: Literal["seller", "admin", "customer"]
+    email: EmailStr
+    created_at: datetime
 
-        # Create and print a dummy user
-        dummy = User(
-            name="Test Seller",
-            type="seller",
-            email="test.seller@example.com"
-        )
-        print("Generated User model:")
-        print(dummy.model_dump_json(indent=2))
 
-        # Insert into MongoDB
-        data = dummy.model_dump()  # plain dict
-        result = await users.insert_one(data)
-        print(f"Inserted user with _id = {result.inserted_id}")
-
-        # Fetch & display
-        fetched = await users.find_one({"_id": result.inserted_id})
-        print("Fetched document:", fetched)
-
-        # Cleanup
-        #await users.delete_one({"_id": result.inserted_id})
-        #print("🧹 Test user deleted. Done.")
-
-    asyncio.run(_test())
+class LoginResponse(BaseModel):
+    message: str
+    token: str
+    user: UserOut

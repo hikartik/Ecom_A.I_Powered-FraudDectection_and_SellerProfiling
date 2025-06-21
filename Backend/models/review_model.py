@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field,ValidationError
 from typing import Optional
 from datetime import datetime
-from database import get_db
+from utils.database import get_db
 import asyncio
 
 class Review(BaseModel):
