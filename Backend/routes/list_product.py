@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post("/")
 async def list_product(image: UploadFile, title: str = Form(...), desc: str = Form(...)):
     img = Image.open(BytesIO(await image.read())).convert("RGB")
-    result = run_prediction(img, title, desc)
+    result = run_prediction(image, title, desc)
 
     # Optional: Add listing save logic here
 
