@@ -1,6 +1,7 @@
 import torch
 import clip
 from PIL import Image
+import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 class MultimodalModel:
@@ -8,11 +9,16 @@ class MultimodalModel:
         self.model, self.preprocess = clip.load("ViT-B/32", device=device)
         self.device = device
 
-    def predict(self, image: Image.Image, title: str, desc: str):
+    def predict(self, images: list[Image.Image], title: str, desc: str) -> float:
+        image_tensors = [self.preprocess(img).unsqueeze(0) for img in images]
+        image_batch = torch.cat(image_tensors, dim=0).to(self.device)
+
         text = f"{title}. {desc}"
-        image_tensor = self.preprocess(image).unsqueeze(0).to(self.device)
         text_tokens = clip.tokenize([text]).to(self.device)
+
         with torch.no_grad():
-            image_features = self.model.encode_image(image_tensor).cpu().numpy()
+            image_features = self.model.encode_image(image_batch).cpu().numpy()
             text_features = self.model.encode_text(text_tokens).cpu().numpy()
-        return float(cosine_similarity(image_features, text_features)[0][0])
+
+        similarities = cosine_similarity(image_features, text_features)
+        return float(np.mean(similarities))  # return average score

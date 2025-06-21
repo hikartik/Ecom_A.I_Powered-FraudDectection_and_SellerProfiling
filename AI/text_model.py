@@ -2,8 +2,15 @@ from transformers import pipeline
 
 class TextModel:
     def __init__(self):
-        self.classifier = pipeline("text-classification", model="bert-base-uncased", top_k=None)
+        self.classifier = pipeline(
+            "text-classification",
+            model="distilbert-base-uncased-finetuned-sst-2-english"
+        )
 
-    def predict(self, text):
+    def predict(self, title: str, desc: str) -> float:
+        text = f"{title}. {desc}"
         result = self.classifier(text)[0]
-        return float(result['score']) if result['label'] == 'LABEL_1' else 1 - float(result['score'])
+        if result['label'] == 'POSITIVE':
+            return float(result['score'])
+        else:
+            return 1 - float(result['score'])

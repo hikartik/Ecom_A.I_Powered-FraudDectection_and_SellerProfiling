@@ -8,15 +8,17 @@ class VisionModel:
     def __init__(self, device='cpu'):
         self.model, self.preprocess = clip.load("ViT-B/32", device=device)
         self.device = device
-        # Load gallery embeddings (precomputed)
         self.gallery_features = np.load("./gallery_embeddings.npy")
 
-    def get_embedding(self, image):
-        image = self.preprocess(image).unsqueeze(0).to(self.device)
+    def get_embedding(self, images: list[Image.Image]) -> np.ndarray:
+        image_tensors = [self.preprocess(img).unsqueeze(0) for img in images]
+        image_batch = torch.cat(image_tensors, dim=0).to(self.device)
         with torch.no_grad():
-            return self.model.encode_image(image).cpu().numpy()
+            embeddings = self.model.encode_image(image_batch).cpu().numpy()
+        return embeddings
 
-    def predict(self, image: Image.Image):
-        emb = self.get_embedding(image)
-        sims = cosine_similarity(emb, self.gallery_features)
-        return float(np.max(sims))  # return best match score
+    def predict(self, images: list[Image.Image]) -> float:
+        embeddings = self.get_embedding(images)
+        sims = cosine_similarity(embeddings, self.gallery_features)
+        best_scores = np.max(sims, axis=1)  # one per image
+        return float(np.mean(best_scores))  # return average score
