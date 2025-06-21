@@ -1,12 +1,7 @@
-import os
-import sys
 from PIL import Image
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "./../.."))
-sys.path.insert(0, project_root)
-
-from AI import vision_model, text_model, multimodal_model
-from AI.ensemble import ensemble_score
+from AI.Real_Time_Analysis import vision_model, text_model, multimodal_model
+from AI.Real_Time_Analysis.ensemble import ensemble_score
 
 def run_prediction(images: list[Image.Image], title: str, desc: str):
     v_score = vision_model.predict(images)

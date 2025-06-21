@@ -1,9 +1,12 @@
 import os
+import sys
 from PIL import Image
-from predict_helper import run_prediction
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "./../.."))
-IMAGE_DIR = os.path.join(BASE_DIR, "gallery_images")
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "./../.."))
+sys.path.insert(0, project_root)
+from AI.Real_Time_Analysis.predict import run_prediction
+
+IMAGE_DIR = os.path.join(project_root, "gallery_images")
 
 # Load sample images
 image_paths = [
