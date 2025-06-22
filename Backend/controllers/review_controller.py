@@ -5,7 +5,7 @@ from bson import ObjectId
 from Backend.utils.database import db
 from Backend.models.review_model import ReviewCreate, Review
 
-reviews_collection = db["review"]
+reviews_collection = db["reviews"]
 products_collection = db["products"]
 users_collection = db["users"]
 

@@ -19,3 +19,4 @@ class SimilarityGrouper:
             grouped_reviews.setdefault(label, []).append(reviews[idx])
 
         return grouped_reviews, labels
+    
