@@ -6,6 +6,7 @@ class Product(BaseModel):
     seller_id: str
     product_name:str
     description: Optional[str] = None
+    price: float = Field(gt=0, description="Product price in currency units")
     images: List[str] = []  # ✅ Cloudinary URLs
     vision_score: float = 0.0
     text_score: float = 0.0

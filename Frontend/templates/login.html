@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - Amazon Clone</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Amazon Ember", Arial, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(to bottom, #f7f8fa, #ffffff);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo img {
+        width: 120px;
+        height: auto;
+      }
+
+      .logo h1 {
+        color: #0f1111;
+        font-size: 28px;
+        font-weight: 400;
+        margin-top: 10px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #0f1111;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #a6a6a6;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: #e77600;
+        box-shadow: 0 0 3px 2px rgba(228, 121, 17, 0.5);
+      }
+
+      .form-group input.error {
+        border-color: #c40000;
+      }
+
+      .error-message {
+        color: #c40000;
+        font-size: 12px;
+        margin-top: 5px;
+        display: none;
+      }
+
+      .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
+        border: 1px solid #a88734;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      .submit-btn:hover {
+        background: linear-gradient(to bottom, #f5d78e, #eeb933);
+      }
+
+      .submit-btn:active {
+        border-color: #a88734 #9c7e31 #846a29;
+      }
+
+      .divider {
+        text-align: center;
+        margin: 25px 0;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #e7e7e7;
+      }
+
+      .divider span {
+        background: white;
+        padding: 0 15px;
+        color: #767676;
+        font-size: 12px;
+      }
+
+      .register-link {
+        text-align: center;
+        font-size: 14px;
+        color: #0f1111;
+      }
+
+      .register-link a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      .register-link a:hover {
+        text-decoration: underline;
+        color: #c45500;
+      }
+
+      .terms {
+        font-size: 12px;
+        color: #767676;
+        line-height: 1.4;
+        margin-top: 20px;
+      }
+
+      .terms a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      .terms a:hover {
+        text-decoration: underline;
+        color: #c45500;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+      }
+
+      .spinner {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #e77600;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .error-alert {
+        display: none;
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .user-type-info {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 12px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #6c757d;
+      }
+
+      .user-type-info strong {
+        color: #495057;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img src="/static/amazon_logo.png" alt="Amazon Logo" />
+        <h1>Sign In</h1>
+      </div>
+
+      <div class="error-alert" id="errorAlert">Invalid email or password.</div>
+
+      <div class="user-type-info">
+        <strong>Demo Accounts:</strong><br />
+        <strong>Customer:</strong> customer@demo.com / password123<br />
+        <strong>Seller:</strong> seller@demo.com / password123<br />
+        <strong>Admin:</strong> admin@demo.com / password123
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+          <div class="error-message" id="emailError">
+            Please enter a valid email address
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+          <div class="error-message" id="passwordError">
+            Please enter your password
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Signing in...</p>
+        </div>
+      </form>
+
+      <div class="divider">
+        <span>New to Amazon?</span>
+      </div>
+
+      <div class="register-link">
+        <a href="/register">Create your Amazon account</a>
+      </div>
+
+      <div class="terms">
+        By continuing, you agree to Amazon's
+        <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("loginForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const loading = document.getElementById("loading");
+        const errorAlert = document.getElementById("errorAlert");
+
+        // Form validation
+        function validateForm() {
+          let isValid = true;
+
+          // Email validation
+          const email = document.getElementById("email").value.trim();
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            showError("email", "Please enter a valid email address");
+            isValid = false;
+          } else {
+            hideError("email");
+          }
+
+          // Password validation
+          const password = document.getElementById("password").value;
+          if (password.length === 0) {
+            showError("password", "Please enter your password");
+            isValid = false;
+          } else {
+            hideError("password");
+          }
+
+          return isValid;
+        }
+
+        function showError(fieldId, message) {
+          const field = document.getElementById(fieldId);
+          const errorDiv = document.getElementById(fieldId + "Error");
+          field.classList.add("error");
+          errorDiv.textContent = message;
+          errorDiv.style.display = "block";
+        }
+
+        function hideError(fieldId) {
+          const field = document.getElementById(fieldId);
+          const errorDiv = document.getElementById(fieldId + "Error");
+          field.classList.remove("error");
+          errorDiv.style.display = "none";
+        }
+
+        function showLoading() {
+          submitBtn.style.display = "none";
+          loading.style.display = "block";
+        }
+
+        function hideLoading() {
+          submitBtn.style.display = "block";
+          loading.style.display = "none";
+        }
+
+        function showError(message) {
+          errorAlert.textContent = message;
+          errorAlert.style.display = "block";
+        }
+
+        // Form submission
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          if (!validateForm()) {
+            return;
+          }
+
+          showLoading();
+
+          const formData = new FormData(form);
+          const loginData = {
+            email: formData.get("email"),
+            password: formData.get("password"),
+          };
+
+          try {
+            const response = await fetch("/auth/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(loginData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Store token
+              localStorage.setItem("token", result.access_token);
+              localStorage.setItem("user_type", result.user_type);
+              localStorage.setItem("user_id", result.user_id);
+              localStorage.setItem("user_name", result.full_name);
+
+              // Redirect based on user type
+              if (result.user_type === "admin") {
+                window.location.href = "/admin";
+              } else if (result.user_type === "seller") {
+                window.location.href = "/seller/dashboard";
+              } else {
+                window.location.href = "/";
+              }
+            } else {
+              showError(result.detail || "Invalid email or password.");
+            }
+          } catch (error) {
+            showError("Network error. Please check your connection.");
+          } finally {
+            hideLoading();
+          }
+        });
+
+        // Real-time validation
+        const inputs = form.querySelectorAll("input");
+        inputs.forEach((input) => {
+          input.addEventListener("blur", function () {
+            validateForm();
+          });
+        });
+
+        // Auto-fill demo accounts
+        const emailInput = document.getElementById("email");
+        emailInput.addEventListener("input", function () {
+          const email = this.value.toLowerCase();
+          if (
+            email === "customer@demo.com" ||
+            email === "seller@demo.com" ||
+            email === "admin@demo.com"
+          ) {
+            document.getElementById("password").value = "password123";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

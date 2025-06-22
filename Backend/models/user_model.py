@@ -40,3 +40,34 @@ class LoginResponse(BaseModel):
     message: str
     token: str
     user: UserOut
+
+
+class User(BaseModel):
+    full_name: str
+    email: EmailStr
+    phone: str
+    password: str
+    user_type: Literal["user", "seller", "admin"] = "user"
+    created_at: datetime = Field(default_factory=datetime.now)
+
+
+class UserResponse(BaseModel):
+    id: str
+    full_name: str
+    email: str
+    phone: str
+    user_type: str
+    created_at: datetime
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_type: str
+    user_id: str
+    full_name: str

@@ -81,6 +81,10 @@
         font-size: 14px;
       }
 
+      .user-options a:hover {
+        color: #ffd814;
+      }
+
       .language-selector {
         display: flex;
         align-items: center;
@@ -386,6 +390,101 @@
           height: 120px;
         }
       }
+
+      /* User Menu Styles */
+      .user-menu-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .user-menu-trigger {
+        color: white;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .user-menu-trigger:hover {
+        color: #ffd814;
+      }
+
+      .user-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        z-index: 1000;
+        margin-top: 5px;
+      }
+
+      .user-menu-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+      }
+
+      .user-menu-header strong {
+        display: block;
+        color: #0f1111;
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+
+      .user-menu-divider {
+        height: 1px;
+        background: #e7e7e7;
+        margin: 8px 0;
+      }
+
+      .user-menu-item {
+        display: block;
+        padding: 10px 16px;
+        color: #0f1111;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
+      }
+
+      .user-menu-item:hover {
+        background-color: #f8f9fa;
+        text-decoration: none;
+        color:black
+      }
+
+      .user-menu-item i {
+        margin-right: 8px;
+        width: 16px;
+        color: #666;
+      }
+
+      .logout-btn {
+        width: 100%;
+        padding: 10px 16px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 0 0 8px 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        text-align: left;
+      }
+
+      .logout-btn:hover {
+        background: #c82333;
+      }
+
+      .logout-btn i {
+        margin-right: 8px;
+        width: 16px;
+      }
     </style>
   </head>
   <body>
@@ -422,7 +521,10 @@
               <option value="hi">HI</option>
             </select>
           </div>
-          <a href="#">Hello, Sign in<br />Account & Lists</a>
+          <div id="auth-links">
+            <a href="/login">Hello, Sign in<br />Account & Lists</a>
+            <a href="/register">Register</a>
+          </div>
           <a href="#">Returns<br />& Orders</a>
           <a href="#" class="cart"><i class="fas fa-shopping-cart"></i> Cart</a>
           <div class="verified-toggle">
@@ -809,6 +911,87 @@
       } else {
         console.error("Verified toggle not found");
       }
+
+      // Authentication state management
+      function checkAuthStatus() {
+        const token = localStorage.getItem("token");
+        const userType = localStorage.getItem("user_type");
+        const userName = localStorage.getItem("user_name");
+        const authLinks = document.getElementById("auth-links");
+
+        if (token && userName) {
+          // User is logged in
+          authLinks.innerHTML = `
+            <div class="user-menu-container">
+              <a href="#" onclick="showUserMenu()" class="user-menu-trigger">Hello, ${userName}<br />Account & Lists</a>
+              <div id="user-menu" class="user-dropdown-menu">
+                <div class="user-menu-header">
+                  <strong>${userName}</strong>
+                  <span style="color: #666; font-size: 12px;">${userType}</span>
+                </div>
+                <div class="user-menu-divider"></div>
+                <a href="/profile" class="user-menu-item">
+                  <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="/orders" class="user-menu-item">
+                  <i class="fas fa-box"></i> Orders
+                </a>
+                ${
+                  userType === "seller"
+                    ? '<a href="/seller/dashboard" class="user-menu-item"><i class="fas fa-store"></i> Seller Dashboard</a>'
+                    : ""
+                }
+                ${
+                  userType === "admin"
+                    ? '<a href="/admin" class="user-menu-item"><i class="fas fa-shield-alt"></i> Admin Panel</a>'
+                    : ""
+                }
+                <div class="user-menu-divider"></div>
+                <button onclick="logout()" class="logout-btn">
+                  <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+              </div>
+            </div>
+          `;
+        } else {
+          // User is not logged in
+          authLinks.innerHTML = `
+            <a href="/login">Hello, Sign in<br />Account & Lists</a>
+            <a href="/register">Register</a>
+          `;
+        }
+      }
+
+      function showUserMenu() {
+        const menu = document.getElementById("user-menu");
+        if (menu) {
+          menu.style.display = menu.style.display === "none" ? "block" : "none";
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_type");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_name");
+        window.location.href = "/register";
+      }
+
+      // Expose functions globally for inline onclick
+      window.showUserMenu = showUserMenu;
+      window.logout = logout;
+
+      // Check auth status on page load
+      checkAuthStatus();
+
+      // Close user menu when clicking outside
+      document.addEventListener("click", function (event) {
+        const userMenu = document.getElementById("user-menu");
+        const authLinks = document.getElementById("auth-links");
+        if (userMenu && !authLinks.contains(event.target)) {
+          userMenu.style.display = "none";
+        }
+      });
     });
   </script>
 </html>

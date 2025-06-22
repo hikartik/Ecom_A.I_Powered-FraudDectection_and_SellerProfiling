@@ -1,7 +1,7 @@
 # backend/routes/list_product.py
 
 from fastapi import APIRouter, UploadFile, Form
-from Backend.utils.predict_helper import run_prediction
+from AI.Real_Time_Analysis.predict import run_prediction
 from PIL import Image
 from io import BytesIO
 
