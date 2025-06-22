@@ -59,9 +59,13 @@ def build_seller_graph(seller_input: dict) -> HeteroData:
         multi_nodes.append(p['multimodal'])
         ens_nodes.append(p['ensemble'])
 
-        # Add review nodes
+        # Add review nodes - handle empty reviews
         review_start_idx = len(review_nodes)
-        review_nodes.extend(p['reviews'])
+        if p['reviews']:
+            review_nodes.extend(p['reviews'])
+        else:
+            # Add a dummy review node if no reviews exist
+            review_nodes.append(torch.zeros(1, 1))
 
         # Edges from scores to product node
         edge_vision_product.append([len(vision_nodes) - 1, i])
@@ -69,18 +73,28 @@ def build_seller_graph(seller_input: dict) -> HeteroData:
         edge_multimodal_product.append([len(multi_nodes) - 1, i])
         edge_ensemble_product.append([len(ens_nodes) - 1, i])
 
-        for j in range(len(p['reviews'])):
-            edge_review_product.append([review_start_idx + j, i])
+        # Add review edges - handle empty reviews
+        if p['reviews']:
+            for j in range(len(p['reviews'])):
+                edge_review_product.append([review_start_idx + j, i])
+        else:
+            # Add edge from dummy review to product
+            edge_review_product.append([review_start_idx, i])
 
         edge_product_seller.append([i, 0])  # product to seller
 
-    # Stack nodes
-    data['vision'].x = torch.cat(vision_nodes, dim=0)
-    data['text'].x = torch.cat(text_nodes, dim=0)
-    data['multimodal'].x = torch.cat(multi_nodes, dim=0)
-    data['ensemble'].x = torch.cat(ens_nodes, dim=0)
-    data['review'].x = torch.cat(review_nodes, dim=0) if review_nodes else torch.empty((0, vision_nodes[0].shape[1]))
-    data['product'].x = torch.cat(product_nodes, dim=0)
+    # Stack nodes - handle empty cases
+    def safe_cat(tensor_list, default_shape=(1, 1)):
+        if not tensor_list:
+            return torch.zeros(default_shape)
+        return torch.cat(tensor_list, dim=0)
+
+    data['vision'].x = safe_cat(vision_nodes)
+    data['text'].x = safe_cat(text_nodes)
+    data['multimodal'].x = safe_cat(multi_nodes)
+    data['ensemble'].x = safe_cat(ens_nodes)
+    data['review'].x = safe_cat(review_nodes)
+    data['product'].x = safe_cat(product_nodes)
 
     # Edges
     def to_edge_index(edge_list):

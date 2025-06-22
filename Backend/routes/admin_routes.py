@@ -15,6 +15,9 @@ from Backend.models.admin_model import (
     ProductOutAdmin,
     ProductUpdateAdmin,
 )
+from Backend.controllers.batch_review_controller import batch_update_review_scores
+from Backend.controllers.batch_seller_controller import batch_update_seller_scores
+from Backend.utils.scheduler import scheduler
 
 router = APIRouter(
     prefix="/admin",
@@ -67,3 +70,58 @@ def admin_ban_seller(
     Ban a seller by ID and deactivate all their products.
     """
     return ban_seller_controller(current_user_id, seller_id)
+
+@router.post("/trigger-review-update")
+async def trigger_review_update():
+    """Manually trigger batch review score update"""
+    try:
+        result = await batch_update_review_scores()
+        return {"success": True, "message": "Review scores updated successfully", "result": result}
+    except Exception as e:
+        return {"success": False, "message": f"Error updating review scores: {str(e)}"}
+
+@router.post("/trigger-seller-update")
+async def trigger_seller_update():
+    """Manually trigger batch seller score update"""
+    try:
+        result = await batch_update_seller_scores()
+        return {"success": True, "message": "Seller scores updated successfully", "result": result}
+    except Exception as e:
+        return {"success": False, "message": f"Error updating seller scores: {str(e)}"}
+
+@router.post("/trigger-all-updates")
+async def trigger_all_updates():
+    """Manually trigger both review and seller score updates"""
+    try:
+        review_result = await batch_update_review_scores()
+        seller_result = await batch_update_seller_scores()
+        return {
+            "success": True, 
+            "message": "All scores updated successfully", 
+            "review_result": review_result,
+            "seller_result": seller_result
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error updating scores: {str(e)}"}
+
+@router.get("/scheduler-status")
+async def get_scheduler_status():
+    """Get the current status of the scheduler"""
+    try:
+        jobs = []
+        for job in scheduler.get_jobs():
+            jobs.append({
+                "id": job.id,
+                "name": job.name,
+                "next_run_time": str(job.next_run_time) if job.next_run_time else None,
+                "trigger": str(job.trigger)
+            })
+        
+        return {
+            "success": True,
+            "scheduler_running": scheduler.running,
+            "jobs": jobs,
+            "job_count": len(jobs)
+        }
+    except Exception as e:
+        return {"success": False, "message": f"Error getting scheduler status: {str(e)}"}
