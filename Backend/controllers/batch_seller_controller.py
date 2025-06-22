@@ -99,7 +99,7 @@ async def batch_update_seller_scores():
             # update the user document
             res = users_col.update_one(
                 {"_id": ObjectId(sid)},
-                {"$set": {"score": batch_score, "updated_at": datetime.utcnow()}}
+                {"$set": {"score": new_score, "updated_at": datetime.utcnow()}}
             )
             if res.modified_count:
                 updated_count += 1
