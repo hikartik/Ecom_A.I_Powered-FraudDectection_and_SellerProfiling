@@ -149,8 +149,8 @@ async def update_product_controller(
             "text_score": updated_product.get("text_score", 0.0),
             "multimodal_score": updated_product.get("multimodal_score", 0.0),
             "ensemble_score": updated_product.get("ensemble_score", 0.0),
-            "created_at": updated_product.get("created_at").isoformat() if updated_product.get("created_at") else None,
-            "updated_at": updated_product.get("updated_at").isoformat() if updated_product.get("updated_at") else None
+            "created_at": updated_product.get("created_at").isoformat() if hasattr(updated_product.get("created_at"), 'isoformat') else updated_product.get("created_at"),
+            "updated_at": updated_product.get("updated_at").isoformat() if hasattr(updated_product.get("updated_at"), 'isoformat') else updated_product.get("updated_at")
         }
 
         return {"message": "Product updated successfully", "product": response_data}
@@ -201,13 +201,29 @@ def get_products_by_seller(seller_id: str) -> List[Dict]:
     products: List[Dict] = []
     for doc in cursor:
         created = doc.get("created_at")
+        
+        # Calculate average rating from reviews
+        product_id = str(doc["_id"])
+        reviews = list(db["reviews"].find({"product_id": product_id}))
+        if reviews:
+            total_rating = sum(review.get("rating", 0) for review in reviews)
+            avg_rating = total_rating / len(reviews)
+            avg_rating_rounded = round(avg_rating, 1)
+            review_count = len(reviews)
+        else:
+            avg_rating_rounded = 3.0  # Default rating
+            review_count = 0
+        
         products.append({
-            "id": str(doc["_id"]),
+            "id": product_id,
             "product_name": doc.get("product_name"),
             "description": doc.get("description"),
             "price": doc.get("price", 0.0),
             "images": doc.get("images", []),
             "status": doc.get("status", "valid"),
+            "ensemble_score": doc.get("ensemble_score", 0.0),
+            "avg_rating": avg_rating_rounded,
+            "review_count": review_count,
             "created_at": (
                 created.isoformat() if isinstance(created, datetime) else created
             )
@@ -231,9 +247,58 @@ def get_all_products_controller() -> List[dict]:
             if "created_at" in doc and hasattr(doc["created_at"], "isoformat"):
                 doc["created_at"] = doc["created_at"].isoformat()
             
+            # Calculate average rating from reviews
+            product_id = doc["id"]
+            reviews = list(db["reviews"].find({"product_id": product_id}))
+            if reviews:
+                total_rating = sum(review.get("rating", 0) for review in reviews)
+                avg_rating = total_rating / len(reviews)
+                doc["avg_rating"] = round(avg_rating, 1)
+                doc["review_count"] = len(reviews)
+            else:
+                doc["avg_rating"] = 3.0  # Default rating
+                doc["review_count"] = 0
+            
             products.append(doc)
         return products
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching products: {e}")
+
+def get_product_by_id_controller(product_id: str) -> dict:
+    """
+    Fetch a single product by ID from MongoDB and return a JSON‐serializable dict.
+    """
+    try:
+        if not ObjectId.is_valid(product_id):
+            raise HTTPException(status_code=422, detail="Invalid product ID format")
+        
+        doc = product_collection.find_one({"_id": ObjectId(product_id)})
+        if not doc:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Convert ObjectId to string
+        doc["id"] = str(doc["_id"])
+        doc.pop("_id", None)
+        
+        # Convert datetime to string if present
+        if "created_at" in doc and hasattr(doc["created_at"], "isoformat"):
+            doc["created_at"] = doc["created_at"].isoformat()
+        
+        # Calculate average rating from reviews
+        reviews = list(db["reviews"].find({"product_id": product_id}))
+        if reviews:
+            total_rating = sum(review.get("rating", 0) for review in reviews)
+            avg_rating = total_rating / len(reviews)
+            doc["avg_rating"] = round(avg_rating, 1)
+            doc["review_count"] = len(reviews)
+        else:
+            doc["avg_rating"] = 3.0  # Default rating
+            doc["review_count"] = 0
+        
+        return doc
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching product: {e}")
 
     

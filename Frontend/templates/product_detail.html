@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Amazon Ember", Arial, sans-serif;
+      }
+
+      body {
+        background-color: #f3f3f3;
+        line-height: 1.5;
+      }
+
+      /* Header Styles */
+      header {
+        background-color: #131921;
+        color: white;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        padding: 15px 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+      }
+
+      .logo img {
+        width: 100px;
+      }
+
+      .search-bar {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .search-bar input {
+        flex-grow: 1;
+        padding: 12px;
+        border: none;
+        font-size: 14px;
+      }
+
+      .search-bar button {
+        padding: 12px 18px;
+        background-color: #febd69;
+        border: none;
+        cursor: pointer;
+      }
+
+      .user-options {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user-options a {
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      /* Main Content */
+      .main-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+
+      .breadcrumb {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .breadcrumb a {
+        color: #0066c0;
+        text-decoration: none;
+      }
+
+      .breadcrumb a:hover {
+        color: #c45500;
+        text-decoration: underline;
+      }
+
+      .product-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Product Images */
+      .product-images {
+        position: relative;
+      }
+
+      .main-image {
+        width: 100%;
+        height: 400px;
+        object-fit: contain;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .thumbnail-gallery {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: border-color 0.3s;
+      }
+
+      .thumbnail:hover,
+      .thumbnail.active {
+        border-color: #febd69;
+      }
+
+      /* Product Info */
+      .product-info h1 {
+        font-size: 24px;
+        color: #0f1111;
+        margin-bottom: 10px;
+        line-height: 1.3;
+      }
+
+      .rating-section {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .rating-section .stars {
+        color: #febd69;
+        font-size: 18px;
+      }
+
+      .rating-section .stars .far.fa-star {
+        color: #ddd;
+      }
+
+      .rating-text {
+        color: #0066c0;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .rating-text:hover {
+        color: #c45500;
+        text-decoration: underline;
+      }
+
+      .ai-score {
+        background: #f8f9fa;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #0f1111;
+        margin-bottom: 15px;
+      }
+
+      .ai-score.high {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .ai-score.medium {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .ai-score.low {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .price-section {
+        margin-bottom: 20px;
+      }
+
+      .price {
+        font-size: 28px;
+        color: #0f1111;
+        font-weight: 400;
+      }
+
+      .original-price {
+        text-decoration: line-through;
+        color: #666;
+        font-size: 16px;
+        margin-left: 10px;
+      }
+
+      .discount {
+        color: #b12704;
+        font-size: 14px;
+        margin-left: 10px;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+
+      .status-badge.valid {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .status-badge.blocked_ai {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .status-badge.blocked_batch {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .delivery-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+
+      .delivery-info h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #0f1111;
+      }
+
+      .delivery-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .delivery-option i {
+        color: #00a8e1;
+      }
+
+      .quantity-section {
+        margin-bottom: 20px;
+      }
+
+      .quantity-section label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .quantity-select {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        flex: 1;
+      }
+
+      .btn-primary {
+        background: #ffd814;
+        color: #0f1111;
+      }
+
+      .btn-primary:hover {
+        background: #f7ca00;
+      }
+
+      .btn-secondary {
+        background: #ffa500;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #e68a00;
+      }
+
+      .btn-outline {
+        background: white;
+        color: #0f1111;
+        border: 1px solid #ddd;
+      }
+
+      .btn-outline:hover {
+        background: #f8f9fa;
+      }
+
+      .product-description {
+        margin-top: 30px;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .product-description h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+        color: #0f1111;
+      }
+
+      .product-description p {
+        color: #0f1111;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .seller-info {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 15px;
+      }
+
+      .seller-info h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: #0f1111;
+      }
+
+      .seller-info p {
+        color: #666;
+        font-size: 14px;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .product-container {
+          grid-template-columns: 1fr;
+          gap: 20px;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .main-image {
+          height: 300px;
+        }
+      }
+
+      /* Loading State */
+      .loading {
+        text-align: center;
+        padding: 50px;
+        font-size: 18px;
+        color: #666;
+      }
+
+      .error {
+        text-align: center;
+        padding: 50px;
+        color: #721c24;
+        background: #f8d7da;
+        border-radius: 8px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="top-bar">
+        <div class="logo">
+          <img src="/static/amazon_logo.png" alt="Amazon" />
+        </div>
+        <div class="search-bar">
+          <input type="text" placeholder="Search products..." />
+          <button><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-options">
+          <a href="/">Home</a>
+          <a href="/products/">Products</a>
+          <a href="#" id="loginLink">Sign In</a>
+          <a href="#" id="cartLink"
+            ><i class="fas fa-shopping-cart"></i> Cart</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+      <div class="breadcrumb">
+        <a href="/">Home</a> > <a href="/products/">Products</a> >
+        <span id="productName">Product Details</span>
+      </div>
+
+      <div id="loading" class="loading">Loading product details...</div>
+
+      <div id="error" class="error" style="display: none">
+        Error loading product details. Please try again.
+      </div>
+
+      <div id="productContent" style="display: none">
+        <!-- Product Images -->
+        <div class="product-container">
+          <div class="product-images">
+            <img id="mainImage" class="main-image" src="" alt="" />
+            <div class="thumbnail-gallery" id="thumbnailGallery">
+              <!-- Thumbnails will be populated here -->
+            </div>
+          </div>
+
+          <!-- Product Information -->
+          <div class="product-info">
+            <h1 id="productTitle"></h1>
+
+            <div class="rating-section">
+              <div class="stars">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+              <span class="rating-text" id="ratingValue">4.5 out of 5</span>
+              <span class="rating-text" id="ratingCount">(1,234 ratings)</span>
+            </div>
+
+            <div id="aiScore" class="ai-score">
+              AI Trust Score: <span id="aiScoreValue"></span>
+            </div>
+
+            <div id="statusBadge" class="status-badge">
+              <!-- Status will be populated here -->
+            </div>
+
+            <div class="price-section">
+              <span class="price" id="productPrice"></span>
+              <span class="original-price" id="originalPrice"></span>
+              <span class="discount" id="discount"></span>
+            </div>
+
+            <div class="delivery-info">
+              <h3>Delivery</h3>
+              <div class="delivery-option">
+                <i class="fas fa-truck"></i>
+                <span>Free delivery by <strong>Tomorrow</strong></span>
+              </div>
+              <div class="delivery-option">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Deliver to your location</span>
+              </div>
+            </div>
+
+            <div class="quantity-section">
+              <label for="quantity">Quantity:</label>
+              <select id="quantity" class="quantity-select">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+
+            <div class="action-buttons">
+              <button class="btn btn-primary" onclick="addToCart()">
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+              </button>
+              <button class="btn btn-secondary" onclick="buyNow()">
+                Buy Now
+              </button>
+            </div>
+
+            <button class="btn btn-outline" onclick="addToWishlist()">
+              <i class="fas fa-heart"></i> Add to Wishlist
+            </button>
+
+            <div class="seller-info">
+              <h3>Sold by</h3>
+              <p id="sellerName">Seller Name</p>
+              <p>Fulfilled by Amazon</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Description -->
+        <div class="product-description">
+          <h2>About this item</h2>
+          <p id="productDescription"></p>
+        </div>
+
+        <!-- Review Submission -->
+        <div class="review-section" style="margin-top: 40px">
+          <h2>Add a Review</h2>
+          <form id="reviewForm">
+            <label for="reviewRating">Rating:</label>
+            <select id="reviewRating" required>
+              <option value="">Select</option>
+              <option value="5">5 - Excellent</option>
+              <option value="4">4 - Good</option>
+              <option value="3">3 - Average</option>
+              <option value="2">2 - Poor</option>
+              <option value="1">1 - Terrible</option>
+            </select>
+            <br /><br />
+            <label for="reviewText">Your Review:</label><br />
+            <textarea
+              id="reviewText"
+              rows="4"
+              cols="50"
+              required
+              placeholder="Write your review..."
+            ></textarea>
+            <br /><br />
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+          </form>
+          <div id="reviewMessage" style="margin-top: 10px"></div>
+        </div>
+
+        <!-- Reviews List -->
+        <div class="reviews-list" style="margin-top: 40px">
+          <h2>Customer Reviews</h2>
+          <div id="reviewsContainer">
+            <!-- Reviews will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Get product ID from URL path (/product/{product_id})
+      const pathParts = window.location.pathname.split("/");
+      const productId = pathParts[pathParts.length - 1];
+
+      // Load product details
+      async function loadProductDetails() {
+        try {
+          const response = await fetch(`/products/api/${productId}`);
+          if (!response.ok) {
+            throw new Error("Product not found");
+          }
+
+          const product = await response.json();
+          displayProduct(product);
+        } catch (error) {
+          console.error("Error loading product:", error);
+          document.getElementById("loading").style.display = "none";
+          document.getElementById("error").style.display = "block";
+        }
+      }
+
+      function displayProduct(product) {
+        // Hide loading, show content
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("productContent").style.display = "block";
+
+        // Set basic product info
+        document.getElementById("productTitle").textContent =
+          product.product_name;
+        document.getElementById("productName").textContent =
+          product.product_name;
+        document.getElementById("productDescription").textContent =
+          product.description || "No description available.";
+        document.getElementById("productPrice").textContent = `₹${(
+          product.price || 0
+        ).toLocaleString()}`;
+        document.getElementById(
+          "sellerName"
+        ).textContent = `Seller ID: ${product.seller_id}`;
+
+        // Set AI score
+        const aiScore = product.ensemble_score || 0;
+        const aiScorePercentage = Math.round(aiScore * 100);
+        document.getElementById(
+          "aiScoreValue"
+        ).textContent = `${aiScorePercentage}%`;
+
+        // Set AI score class
+        const aiScoreElement = document.getElementById("aiScore");
+        aiScoreElement.className = "ai-score";
+        if (aiScorePercentage > 80) {
+          aiScoreElement.classList.add("high");
+        } else if (aiScorePercentage >= 60) {
+          aiScoreElement.classList.add("medium");
+        } else {
+          aiScoreElement.classList.add("low");
+        }
+
+        // Set status badge
+        const statusBadge = document.getElementById("statusBadge");
+        const status = product.status || "valid";
+        statusBadge.textContent = status.replace("_", " ").toUpperCase();
+        statusBadge.className = `status-badge ${status}`;
+
+        // Set star ratings
+        const avgRating = product.avg_rating || 3.0;
+        const reviewCount = product.review_count || 0;
+        const starRating = Math.round(avgRating);
+        const hasHalfStar = avgRating % 1 >= 0.5;
+
+        // Update rating text
+        document.getElementById(
+          "ratingValue"
+        ).textContent = `${avgRating.toFixed(1)} out of 5`;
+        document.getElementById(
+          "ratingCount"
+        ).textContent = `(${reviewCount} rating${
+          reviewCount !== 1 ? "s" : ""
+        })`;
+
+        // Update star display
+        const starsContainer = document.querySelector(".rating-section .stars");
+        starsContainer.innerHTML = "";
+
+        for (let i = 1; i <= 5; i++) {
+          const star = document.createElement("i");
+          if (i <= starRating) {
+            star.className = "fas fa-star";
+          } else if (i === starRating + 1 && hasHalfStar) {
+            star.className = "fas fa-star-half-alt";
+          } else {
+            star.className = "far fa-star";
+          }
+          starsContainer.appendChild(star);
+        }
+
+        // Set main image
+        const mainImage = document.getElementById("mainImage");
+        if (product.images && product.images.length > 0) {
+          mainImage.src = product.images[0];
+          mainImage.alt = product.product_name;
+        } else {
+          mainImage.src = "/static/amazon_logo.png";
+          mainImage.alt = "No image available";
+        }
+
+        // Set thumbnails
+        const thumbnailGallery = document.getElementById("thumbnailGallery");
+        thumbnailGallery.innerHTML = "";
+
+        if (product.images && product.images.length > 0) {
+          product.images.forEach((image, index) => {
+            const thumbnail = document.createElement("img");
+            thumbnail.src = image;
+            thumbnail.alt = `${product.product_name} - Image ${index + 1}`;
+            thumbnail.className = "thumbnail";
+            if (index === 0) thumbnail.classList.add("active");
+
+            thumbnail.onclick = () => {
+              // Update main image
+              mainImage.src = image;
+              // Update active thumbnail
+              document
+                .querySelectorAll(".thumbnail")
+                .forEach((t) => t.classList.remove("active"));
+              thumbnail.classList.add("active");
+            };
+
+            thumbnailGallery.appendChild(thumbnail);
+          });
+        }
+      }
+
+      // Action functions
+      function addToCart() {
+        const quantity = document.getElementById("quantity").value;
+        alert(`Added ${quantity} item(s) to cart!`);
+      }
+
+      function buyNow() {
+        const quantity = document.getElementById("quantity").value;
+        alert(`Proceeding to checkout with ${quantity} item(s)!`);
+      }
+
+      function addToWishlist() {
+        alert("Added to wishlist!");
+      }
+
+      // Initialize page
+      if (productId) {
+        loadProductDetails();
+      } else {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("error").style.display = "block";
+        document.getElementById("error").textContent =
+          "No product ID provided.";
+      }
+
+      // Handle login/cart links
+      document.getElementById("loginLink").onclick = function (e) {
+        e.preventDefault();
+        window.location.href = "/login";
+      };
+
+      document.getElementById("cartLink").onclick = function (e) {
+        e.preventDefault();
+        alert("Cart functionality coming soon!");
+      };
+
+      // --- Review Submission Logic ---
+      document.getElementById("reviewForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const rating = document.getElementById("reviewRating").value;
+        const text = document.getElementById("reviewText").value.trim();
+        const messageDiv = document.getElementById("reviewMessage");
+        messageDiv.textContent = "";
+        if (!rating || !text) {
+          messageDiv.textContent =
+            "Please provide both rating and review text.";
+          return;
+        }
+        try {
+          const userId = localStorage.getItem("user_id") || "demo_user";
+          const res = await fetch(`/products/${productId}/reviews/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              customer_id: userId,
+              rating: parseInt(rating),
+              comment: text,
+            }),
+          });
+          if (res.ok) {
+            messageDiv.textContent = "Review submitted!";
+            document.getElementById("reviewForm").reset();
+            loadReviews();
+          } else {
+            const err = await res.json();
+            messageDiv.textContent = err.detail || "Failed to submit review.";
+          }
+        } catch (err) {
+          messageDiv.textContent = "Error submitting review.";
+        }
+      };
+
+      // --- Load and Display Reviews ---
+      async function loadReviews() {
+        const container = document.getElementById("reviewsContainer");
+        container.innerHTML = "Loading reviews...";
+        try {
+          const res = await fetch(`/products/${productId}/reviews/`);
+          if (!res.ok) throw new Error("Failed to load reviews");
+          const reviews = await res.json();
+          if (reviews.length === 0) {
+            container.innerHTML =
+              '<div style="color:#666;">No reviews yet.</div>';
+            return;
+          }
+          container.innerHTML = "";
+          reviews.forEach((r) => {
+            const div = document.createElement("div");
+            div.className = "review-item";
+            div.style = "border-bottom:1px solid #eee;padding:12px 0;";
+            div.innerHTML = `
+                <div style="font-size:16px;color:#f39c12;">
+                    ${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}
+                </div>
+                <div style="margin:6px 0;">${r.comment || r.text || ""}</div>
+                <div style="font-size:12px;color:#888;">by ${
+                  r.customer_id || r.user_id || "Anonymous"
+                } on ${
+              r.created_at ? new Date(r.created_at).toLocaleString() : ""
+            }</div>
+            `;
+            container.appendChild(div);
+          });
+        } catch (err) {
+          container.innerHTML =
+            '<div style="color:#c00;">Error loading reviews.</div>';
+        }
+      }
+
+      // Call loadReviews after product loads
+      if (productId) {
+        loadProductDetails();
+        loadReviews();
+      }
+    </script>
+  </body>
+</html>

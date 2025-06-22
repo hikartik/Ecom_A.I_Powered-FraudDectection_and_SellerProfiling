@@ -145,103 +145,183 @@
     </main>
   </body>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Dummy product data
-    let products = [
-        { id: "P001", name: "Smartphone XYZ", seller: "SellerA", aiScore: 85, status: "current" },
-        { id: "P002", name: "Wireless Headphones", seller: "SellerB", aiScore: 75, status: "current" },
-        { id: "P003", name: "Smart Watch", seller: "SellerA", aiScore: 90, status: "blocked_ai" },
-        { id: "P004", name: "Laptop ABC", seller: "SellerC", aiScore: 60, status: "current" },
-        { id: "P005", name: "Modern Sofa", seller: "SellerB", aiScore: 82, status: "blocked_batch" },
-        { id: "P006", name: "Men's T-shirt", seller: "SellerA", aiScore: 70, status: "current" },
-        { id: "P007", name: "Sneakers", seller: "SellerC", aiScore: 88, status: "current" },
-        { id: "P008", name: "Sunglasses", seller: "SellerB", aiScore: 65, status: "blocked_ai" },
-        { id: "P009", name: "Bestseller Novel", seller: "SellerA", aiScore: 95, status: "current" },
-        { id: "P010", name: "Cutlery", seller: "SellerC", aiScore: 78, status: "blocked_batch" }
-    ];
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check authentication and redirect if not admin
+      function checkAuth() {
+        const token = localStorage.getItem("token");
+        const userType = localStorage.getItem("user_type");
+        const userName = localStorage.getItem("user_name");
 
-    // Function to render products
-    function renderProducts(filteredProducts = products) {
-        const tbody = document.getElementById('productTableBody');
-        if (!tbody) {
-            console.error('Product table body not found');
-            return;
+        if (!token || userType !== "admin") {
+          alert("Access denied. Only admins can access this dashboard.");
+          window.location.href = "/login";
+          return;
         }
-        tbody.innerHTML = '';
-        filteredProducts.forEach(product => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${product.id}</td>
-                <td>${product.name}</td>
-                <td>${product.seller}</td>
+
+        // Update header with admin name
+        document.querySelector(
+          "header h1"
+        ).textContent = `Admin Panel - Welcome, ${userName}`;
+      }
+
+      // Load products from API
+      async function loadProducts() {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            throw new Error("Not authenticated");
+          }
+
+          const response = await fetch("/admin/products", {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+
+          if (response.ok) {
+            const products = await response.json();
+            renderProducts(products);
+          } else {
+            throw new Error("Failed to load products");
+          }
+        } catch (error) {
+          console.error("Error loading products:", error);
+          document.getElementById("productTableBody").innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; color: #666;">
+                Failed to load products. Please try again.
+              </td>
+            </tr>
+          `;
+        }
+      }
+
+      // Function to render products
+      function renderProducts(products) {
+        const tbody = document.getElementById("productTableBody");
+        if (!tbody) {
+          console.error("Product table body not found");
+          return;
+        }
+        tbody.innerHTML = "";
+
+        if (products.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" style="text-align: center; color: #666;">
+                No products found.
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        products.forEach((product) => {
+          console.log("DEBUG product:", product); // Debug log
+          const row = document.createElement("tr");
+          const aiScorePercentage = Math.round(
+            (product.ensemble_score || 0) * 100
+          );
+          row.innerHTML = `
+                <td>${product.id || product._id || "MISSING_ID"}</td>
+                <td>${product.product_name}</td>
+                <td>${product.seller_id}</td>
                 <td>
-                    <input type="number" class="ai-score" value="${product.aiScore}" min="0" max="100">
+                    <input type="number" class="ai-score" value="${aiScorePercentage}" min="0" max="100">
                 </td>
                 <td>
                     <select class="status">
-                        <option value="current" ${product.status === 'current' ? 'selected' : ''}>Current</option>
-                        <option value="blocked_ai" ${product.status === 'blocked_ai' ? 'selected' : ''}>Blocked AI</option>
-                        <option value="blocked_batch" ${product.status === 'blocked_batch' ? 'selected' : ''}>Blocked Batch</option>
+                        <option value="valid" ${
+                          product.status === "valid" ? "selected" : ""
+                        }>Valid</option>
+                        <option value="blocked_ai" ${
+                          product.status === "blocked_ai" ? "selected" : ""
+                        }>Blocked AI</option>
+                        <option value="blocked_batch" ${
+                          product.status === "blocked_batch" ? "selected" : ""
+                        }>Blocked Batch</option>
                     </select>
                 </td>
-                <td><button class="update" data-id="${product.id}">Update</button></td>
+                <td><button class="update" data-id="${
+                  product.id || product._id || ""
+                }">Update</button></td>
             `;
-            tbody.appendChild(row);
+          tbody.appendChild(row);
         });
 
         // Add update event listeners
-        document.querySelectorAll('.update').forEach(button => {
-            button.addEventListener('click', () => {
-                const id = button.getAttribute('data-id');
-                const row = button.closest('tr');
-                const newScore = parseInt(row.querySelector('.ai-score').value, 10);
-                const newStatus = row.querySelector('.status').value;
+        document.querySelectorAll(".update").forEach((button) => {
+          button.addEventListener("click", async () => {
+            const id = button.getAttribute("data-id");
+            const row = button.closest("tr");
+            const newScore =
+              parseInt(row.querySelector(".ai-score").value, 10) / 100; // Convert to decimal
+            const newStatus = row.querySelector(".status").value;
 
-                const product = products.find(p => p.id === id);
-                if (product) {
-                    product.aiScore = newScore;
-                    product.status = newStatus;
-                    renderProducts(filteredProducts); // Re-render to reflect changes
-                }
-            });
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch(`/admin/products/${id}`, {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + token,
+                },
+                body: JSON.stringify({
+                  ensemble_score: newScore,
+                  status: newStatus,
+                }),
+              });
+
+              if (response.ok) {
+                alert("Product updated successfully!");
+                loadProducts(); // Reload products
+              } else {
+                const error = await response.json();
+                alert(
+                  "Failed to update product: " +
+                    (error.detail || "Unknown error")
+                );
+              }
+            } catch (error) {
+              console.error("Error updating product:", error);
+              alert("Failed to update product: " + error.message);
+            }
+          });
         });
-    }
+      }
 
-    // Initial render
-    renderProducts();
+      // Logout function
+      function logout() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user_type");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("user_name");
+        window.location.href = "/login";
+      }
 
-    // Filter functionality
-    const searchInput = document.getElementById('searchInput');
-    const sellerFilter = document.getElementById('sellerFilter');
-    const statusFilter = document.getElementById('statusFilter');
-    const applyFiltersButton = document.getElementById('applyFilters');
+      // Initialize admin dashboard
+      checkAuth();
+      loadProducts();
 
-    applyFiltersButton.addEventListener('click', () => {
-        let filteredProducts = [...products];
-
-        const searchTerm = searchInput.value.toLowerCase();
-        if (searchTerm) {
-            filteredProducts = filteredProducts.filter(product =>
-                product.name.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        const selectedSeller = sellerFilter.value;
-        if (selectedSeller) {
-            filteredProducts = filteredProducts.filter(product =>
-                product.seller === selectedSeller
-            );
-        }
-
-        const selectedStatus = statusFilter.value;
-        if (selectedStatus) {
-            filteredProducts = filteredProducts.filter(product =>
-                product.status === selectedStatus
-            );
-        }
-
-        renderProducts(filteredProducts);
+      // Add logout button to header
+      const header = document.querySelector("header");
+      const logoutBtn = document.createElement("button");
+      logoutBtn.textContent = "Logout";
+      logoutBtn.style.cssText = `
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 8px 16px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      `;
+      logoutBtn.onclick = logout;
+      header.style.position = "relative";
+      header.appendChild(logoutBtn);
     });
-});
   </script>
 </html>

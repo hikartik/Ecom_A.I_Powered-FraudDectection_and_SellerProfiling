@@ -13,11 +13,26 @@ products_col = db["products"]
 reviews_col  = db["reviews"]
 
 def check_admin_role(current_user_id: str):
+    print(f"DEBUG: Checking admin role for user_id: {current_user_id}")
     if not ObjectId.is_valid(current_user_id):
+        print(f"DEBUG: Invalid ObjectId format: {current_user_id}")
         raise HTTPException(422, "Invalid user_id format")
+    
     user = users_col.find_one({"_id": ObjectId(current_user_id)})
-    if not user or user.get("type") != "admin":
+    print(f"DEBUG: User found: {user}")
+    
+    if not user:
+        print(f"DEBUG: No user found with ID: {current_user_id}")
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin access required")
+    
+    user_type = user.get("type")
+    print(f"DEBUG: User type: {user_type}")
+    
+    if user_type != "admin":
+        print(f"DEBUG: User is not admin, type is: {user_type}")
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Admin access required")
+    
+    print(f"DEBUG: Admin access granted for user: {user.get('email', 'N/A')}")
     return user
 
 def get_all_sellers_controller(current_user_id: str):
@@ -55,7 +70,8 @@ def get_seller_detail_with_products(current_user_id: str, seller_id: str):
 
     prods = []
     for p in products_col.find({"seller_id": seller_id, "status": "valid"}):
-        p["_id"] = str(p["_id"])
+        p['_id'] = str(p['_id'])
+        p['id'] = p['_id']  # Ensure 'id' field is present for frontend
         prods.append(ProductOutAdmin.model_validate(p))
 
     return UserDetailWithProducts(user=user_out, products=prods)
@@ -78,7 +94,8 @@ def list_products_admin(current_user_id: str,
     out = []
     cursor = products_col.find(q).skip(skip).limit(limit)
     for p in cursor:
-        p["_id"] = str(p["_id"])
+        p['_id'] = str(p['_id'])
+        p['id'] = p['_id']  # Ensure 'id' field is present for frontend
         out.append(ProductOutAdmin.model_validate(p))
     return out
 
@@ -101,7 +118,8 @@ def update_product_admin(current_user_id: str,
         products_col.update_one({"_id": ObjectId(product_id)}, {"$set": upd})
 
     p = products_col.find_one({"_id": ObjectId(product_id)})
-    p["_id"] = str(p["_id"])
+    p['_id'] = str(p['_id'])
+    p['id'] = p['_id']  # Ensure 'id' field is present for frontend
     return ProductOutAdmin.model_validate(p)
 
 def delete_product_admin(current_user_id: str, product_id: str):

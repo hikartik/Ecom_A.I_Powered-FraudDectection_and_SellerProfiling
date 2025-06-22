@@ -412,21 +412,22 @@
       /* Products Grid */
       .products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 15px;
       }
 
       .product-card {
         background: white;
         border: 1px solid #ddd;
         border-radius: 8px;
-        padding: 16px;
+        padding: 12px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.2s ease, transform 0.2s ease;
         cursor: pointer;
         position: relative;
         display: flex;
         flex-direction: column;
+        min-height: 320px;
       }
 
       .product-card::before {
@@ -499,10 +500,29 @@
       }
 
       .product-card .ai-score {
-        color: #b12704;
+        font-size: 14px;
+        margin-bottom: 8px;
         font-weight: bold;
-        font-size: 13px;
-        margin-bottom: 6px;
+      }
+
+      .product-card .rating-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .product-card .stars {
+        color: #febd69;
+        font-size: 16px;
+        letter-spacing: 1px;
+      }
+
+      .product-card .rating-text {
+        color: #0066c0;
+        font-size: 14px;
+        font-weight: bold;
       }
 
       .product-card .status {
@@ -522,6 +542,11 @@
       .product-card .status.blocked_ai {
         background: #f8d7da;
         color: #721c24;
+      }
+
+      .product-card .status.blocked_batch {
+        background: #fff3cd;
+        color: #856404;
       }
 
       .product-card .price {
@@ -1086,6 +1111,86 @@
         margin-right: 8px;
         width: 16px;
       }
+
+      .product-card button:hover {
+        background: linear-gradient(to bottom, #f0c14b 0%, #e6a23c 100%);
+        border-color: #a88734;
+        transform: translateY(-1px);
+      }
+
+      /* Pagination Styles */
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .pagination-info {
+        margin: 0 20px;
+        color: #666;
+        font-size: 14px;
+      }
+
+      .pagination-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pagination-btn {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: white;
+        color: #333;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 14px;
+        min-width: 40px;
+        text-align: center;
+      }
+
+      .pagination-btn:hover {
+        background: #f8f9fa;
+        border-color: #c45500;
+      }
+
+      .pagination-btn.active {
+        background: #c45500;
+        color: white;
+        border-color: #c45500;
+      }
+
+      .pagination-btn:disabled {
+        background: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+        border-color: #ddd;
+      }
+
+      .page-size-selector {
+        margin-left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .page-size-selector label {
+        font-size: 14px;
+        color: #666;
+      }
+
+      .page-size-selector select {
+        padding: 6px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
@@ -1093,9 +1198,7 @@
     <header>
       <div class="top-bar">
         <div class="logo">
-          <a href="search.html"
-            ><img src="../assets/amazon_logo.png" alt="Amazon.in"
-          /></a>
+          <img src="/static/amazon_logo.png" alt="Amazon.in" />
         </div>
         <div class="location">
           <i class="fas fa-map-marker-alt"></i>
@@ -1250,6 +1353,38 @@
           <div id="productsGrid" class="products-grid">
             <!-- Products will be dynamically inserted here -->
           </div>
+          <!-- Pagination Container -->
+          <div
+            id="paginationContainer"
+            class="pagination-container"
+            style="display: none"
+          >
+            <div class="pagination-controls">
+              <button
+                id="prevBtn"
+                class="pagination-btn"
+                onclick="previousPage()"
+              >
+                Previous
+              </button>
+              <div id="pageNumbers" class="pagination-controls"></div>
+              <button id="nextBtn" class="pagination-btn" onclick="nextPage()">
+                Next
+              </button>
+            </div>
+            <div class="pagination-info">
+              <span id="paginationInfo">Showing 0 of 0 products</span>
+            </div>
+            <div class="page-size-selector">
+              <label for="pageSize">Show:</label>
+              <select id="pageSize" onchange="changePageSize()">
+                <option value="8">8 per page</option>
+                <option value="12" selected>12 per page</option>
+                <option value="16">16 per page</option>
+                <option value="24">24 per page</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -1263,6 +1398,11 @@
     document.addEventListener("DOMContentLoaded", async () => {
       let allProducts = [];
       let filteredProducts = [];
+
+      // Pagination variables
+      let currentPage = 1;
+      let pageSize = 12;
+      let totalPages = 1;
 
       // Fetch products from API
       async function fetchProducts() {
@@ -1280,37 +1420,66 @@
 
       // Initialize filters
       function initializeFilters() {
-        // Price range sliders
-        const priceMin = document.getElementById("priceMin");
-        const priceMax = document.getElementById("priceMax");
+        // Calculate max price from products
+        const maxPrice =
+          allProducts.length > 0
+            ? Math.max(...allProducts.map((p) => p.price || 0))
+            : 100000;
+
+        // Set price range slider max value
+        const priceMaxSlider = document.getElementById("priceMax");
+        const priceMinSlider = document.getElementById("priceMin");
+
+        if (priceMaxSlider) {
+          priceMaxSlider.max = maxPrice;
+          priceMaxSlider.value = maxPrice;
+        }
+
+        // Update price range labels
         const priceMinLabel = document.getElementById("priceMinLabel");
         const priceMaxLabel = document.getElementById("priceMaxLabel");
+        if (priceMinLabel) priceMinLabel.textContent = "₹0";
+        if (priceMaxLabel)
+          priceMaxLabel.textContent = `₹${maxPrice.toLocaleString()}`;
 
-        priceMin.addEventListener("input", function () {
-          priceMinLabel.textContent = `₹${parseInt(
-            this.value
-          ).toLocaleString()}`;
-          if (parseInt(this.value) > parseInt(priceMax.value)) {
-            priceMax.value = this.value;
-            priceMaxLabel.textContent = `₹${parseInt(
-              this.value
-            ).toLocaleString()}`;
-          }
-          applyFilters();
-        });
+        // Set initial values
+        if (priceMinSlider) priceMinSlider.value = 0;
+        if (priceMaxSlider) priceMaxSlider.value = maxPrice;
 
-        priceMax.addEventListener("input", function () {
-          priceMaxLabel.textContent = `₹${parseInt(
-            this.value
-          ).toLocaleString()}`;
-          if (parseInt(this.value) < parseInt(priceMin.value)) {
-            priceMin.value = this.value;
-            priceMinLabel.textContent = `₹${parseInt(
-              this.value
-            ).toLocaleString()}`;
-          }
-          applyFilters();
-        });
+        // Add event listeners for price range sliders
+        if (priceMinSlider) {
+          priceMinSlider.addEventListener("input", function () {
+            const minValue = parseInt(this.value);
+            const maxValue = parseInt(priceMaxSlider.value);
+
+            if (minValue > maxValue) {
+              priceMaxSlider.value = minValue;
+              if (priceMaxLabel)
+                priceMaxLabel.textContent = `₹${minValue.toLocaleString()}`;
+            }
+
+            if (priceMinLabel)
+              priceMinLabel.textContent = `₹${minValue.toLocaleString()}`;
+            applyFilters();
+          });
+        }
+
+        if (priceMaxSlider) {
+          priceMaxSlider.addEventListener("input", function () {
+            const maxValue = parseInt(this.value);
+            const minValue = parseInt(priceMinSlider.value);
+
+            if (maxValue < minValue) {
+              priceMinSlider.value = maxValue;
+              if (priceMinLabel)
+                priceMinLabel.textContent = `₹${maxValue.toLocaleString()}`;
+            }
+
+            if (priceMaxLabel)
+              priceMaxLabel.textContent = `₹${maxValue.toLocaleString()}`;
+            applyFilters();
+          });
+        }
 
         // AI Score checkboxes
         const aiScoreAbove80 = document.getElementById("aiScoreAbove80");
@@ -1372,7 +1541,7 @@
               product.description.toLowerCase().includes(searchTerm));
 
           // Price filter
-          const productPrice = getProductPrice(product);
+          const productPrice = product.price || 0;
           const matchesPrice =
             productPrice >= priceMin && productPrice <= priceMax;
 
@@ -1391,7 +1560,8 @@
           if (matchesStatus && !(statusValid && statusBlocked)) {
             matchesStatus = statusValid
               ? product.status === "valid"
-              : product.status === "blocked_ai";
+              : product.status === "blocked_ai" ||
+                product.status === "blocked_batch";
           }
 
           const matches =
@@ -1405,6 +1575,9 @@
 
         // Sort products
         sortProducts(sortBy);
+
+        // Reset pagination to first page when filters change
+        currentPage = 1;
 
         // Display filtered products
         displayProducts();
@@ -1424,14 +1597,10 @@
             );
             break;
           case "price-low":
-            filteredProducts.sort(
-              (a, b) => getProductPrice(a) - getProductPrice(b)
-            );
+            filteredProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
             break;
           case "price-high":
-            filteredProducts.sort(
-              (a, b) => getProductPrice(b) - getProductPrice(a)
-            );
+            filteredProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
             break;
           case "ai-score-high":
             filteredProducts.sort(
@@ -1448,9 +1617,15 @@
 
       // Clear all filters
       function clearAllFilters() {
+        // Calculate max price from products
+        const maxPrice =
+          allProducts.length > 0
+            ? Math.max(...allProducts.map((p) => p.price || 0))
+            : 100000;
+
         document.getElementById("searchFilter").value = "";
         document.getElementById("priceMin").value = 0;
-        document.getElementById("priceMax").value = 100000;
+        document.getElementById("priceMax").value = maxPrice;
         document.getElementById("aiScoreAbove80").checked = true;
         document.getElementById("aiScoreBelow80").checked = true;
         document.getElementById("statusValid").checked = true;
@@ -1459,7 +1634,9 @@
 
         // Update labels
         document.getElementById("priceMinLabel").textContent = "₹0";
-        document.getElementById("priceMaxLabel").textContent = "₹100,000";
+        document.getElementById(
+          "priceMaxLabel"
+        ).textContent = `₹${maxPrice.toLocaleString()}`;
 
         applyFilters();
       }
@@ -1468,6 +1645,9 @@
       function displayProducts() {
         const productsGrid = document.getElementById("productsGrid");
         const productCount = document.getElementById("productCount");
+        const paginationContainer = document.getElementById(
+          "paginationContainer"
+        );
 
         // Clear existing content
         productsGrid.innerHTML = "";
@@ -1481,17 +1661,35 @@
         if (filteredProducts.length === 0) {
           productsGrid.innerHTML =
             '<div style="grid-column: 1/-1; text-align: center; padding: 50px; color: #666;">No products found matching your search</div>';
+          paginationContainer.style.display = "none";
           return;
         }
 
-        // Create product cards
-        filteredProducts.forEach((product) => {
+        // Calculate pagination
+        totalPages = Math.ceil(filteredProducts.length / pageSize);
+        const startIndex = (currentPage - 1) * pageSize;
+        const endIndex = Math.min(
+          startIndex + pageSize,
+          filteredProducts.length
+        );
+        const currentPageProducts = filteredProducts.slice(
+          startIndex,
+          endIndex
+        );
+
+        // Create product cards for current page
+        currentPageProducts.forEach((product) => {
           const productCard = document.createElement("div");
           productCard.className = "product-card";
 
-          const productPrice = getProductPrice(product);
+          const productPrice = product.price || 0;
           const aiScoreDecimal = product.ensemble_score || 0;
           const aiScorePercentage = Math.round(aiScoreDecimal * 100);
+
+          // Calculate average rating (default to 3.0 if no reviews)
+          const avgRating = product.avg_rating || 3.0;
+          const starRating = Math.round(avgRating);
+          const hasHalfStar = avgRating % 1 >= 0.5;
 
           // Add score class based on AI score
           if (aiScorePercentage > 80) {
@@ -1514,6 +1712,14 @@
             <p class="description">${
               product.description || "No description available"
             }</p>
+            <div class="rating-section">
+              <div class="stars">
+                ${"★".repeat(starRating)}${hasHalfStar ? "☆" : ""}${"☆".repeat(
+            5 - starRating - (hasHalfStar ? 1 : 0)
+          )}
+              </div>
+              <span class="rating-text">${avgRating.toFixed(1)}</span>
+            </div>
             <div class="ai-score">AI Score: ${aiScorePercentage}%</div>
             <div class="status ${product.status || "valid"}">${
             product.status || "valid"
@@ -1521,16 +1727,130 @@
             <div class="price">₹${productPrice.toLocaleString()}</div>
             <div class="buttons">
               <button class="add-to-cart" onclick="addToCart('${
-                product.id
+                product.id || product._id || ""
               }')">Add to Cart</button>
               <button class="view-details" onclick="viewDetails('${
-                product.id
+                product.id || product._id || ""
               }')">View Details</button>
             </div>
           `;
 
           productsGrid.appendChild(productCard);
         });
+
+        // Update pagination
+        updatePagination();
+      }
+
+      // Pagination functions
+      function updatePagination() {
+        const paginationContainer = document.getElementById(
+          "paginationContainer"
+        );
+        const pageNumbers = document.getElementById("pageNumbers");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const paginationInfo = document.getElementById("paginationInfo");
+
+        if (totalPages <= 1) {
+          paginationContainer.style.display = "none";
+          return;
+        }
+
+        paginationContainer.style.display = "flex";
+
+        // Update pagination info
+        const startIndex = (currentPage - 1) * pageSize + 1;
+        const endIndex = Math.min(
+          currentPage * pageSize,
+          filteredProducts.length
+        );
+        paginationInfo.textContent = `Showing ${startIndex}-${endIndex} of ${filteredProducts.length} products`;
+
+        // Update Previous/Next buttons
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages;
+
+        // Generate page numbers
+        pageNumbers.innerHTML = "";
+        const maxVisiblePages = 5;
+        let startPage = Math.max(
+          1,
+          currentPage - Math.floor(maxVisiblePages / 2)
+        );
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage + 1 < maxVisiblePages) {
+          startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        // Add first page if not visible
+        if (startPage > 1) {
+          addPageButton(1);
+          if (startPage > 2) {
+            addPageButton("...");
+          }
+        }
+
+        // Add visible page numbers
+        for (let i = startPage; i <= endPage; i++) {
+          addPageButton(i);
+        }
+
+        // Add last page if not visible
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+            addPageButton("...");
+          }
+          addPageButton(totalPages);
+        }
+      }
+
+      function addPageButton(pageNum) {
+        const pageNumbers = document.getElementById("pageNumbers");
+        const button = document.createElement("button");
+        button.className = "pagination-btn";
+
+        if (pageNum === "...") {
+          button.textContent = "...";
+          button.disabled = true;
+        } else {
+          button.textContent = pageNum;
+          if (pageNum === currentPage) {
+            button.classList.add("active");
+          }
+          button.onclick = () => goToPage(pageNum);
+        }
+
+        pageNumbers.appendChild(button);
+      }
+
+      function goToPage(page) {
+        if (page >= 1 && page <= totalPages) {
+          currentPage = page;
+          displayProducts();
+        }
+      }
+
+      function previousPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          displayProducts();
+        }
+      }
+
+      function nextPage() {
+        if (currentPage < totalPages) {
+          currentPage++;
+          displayProducts();
+        }
+      }
+
+      function changePageSize() {
+        const newPageSize = parseInt(document.getElementById("pageSize").value);
+        pageSize = newPageSize;
+        currentPage = 1; // Reset to first page
+        displayProducts();
       }
 
       // Global functions for buttons
@@ -1539,12 +1859,21 @@
       };
 
       window.viewDetails = function (productId) {
-        alert(`Viewing details for product ${productId}`);
+        console.log("View Details clicked for product ID:", productId);
+        if (!productId || productId === "") {
+          alert("Product ID not found. Please try again.");
+          return;
+        }
+        window.location.href = `/product/${productId}`;
       };
 
       // Initialize the page
       async function initializePage() {
+        console.log("Initializing page...");
         allProducts = await fetchProducts();
+        console.log("Fetched products:", allProducts);
+        console.log("Number of products:", allProducts.length);
+
         filteredProducts = [...allProducts];
 
         // Debug: Log AI scores

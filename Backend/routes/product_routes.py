@@ -5,7 +5,8 @@ from Backend.controllers.product_controller import (
     get_products_by_seller,
     get_all_products_controller,
     update_product_controller,
-    delete_product_controller
+    delete_product_controller,
+    get_product_by_id_controller
 )
 from Backend.utils.jwt_handler import get_current_user_id
 
@@ -41,6 +42,11 @@ def list_my_products(seller_id: str = Depends(get_current_user_id)):
 def list_all_products():
     # you can keep this sync too
     return get_all_products_controller()
+
+# Get single product by ID
+@router.get("/api/{product_id}", summary="Get product by ID")
+def get_product_by_id(product_id: str):
+    return get_product_by_id_controller(product_id)
 
 # Add product via API endpoint
 @router.post("/api/")

@@ -68,6 +68,14 @@ def serve_products_page(request: Request):
 def serve_seller_dashboard(request: Request):
     return templates.TemplateResponse("seller_dashboard.html", {"request": request})
 
+@app.get("/admin", response_class=HTMLResponse)
+def serve_admin_dashboard(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
+
+@app.get("/product/{product_id}", response_class=HTMLResponse)
+def serve_product_detail(request: Request, product_id: str):
+    return templates.TemplateResponse("product_detail.html", {"request": request})
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("Backend.main:app", reload=True)
