@@ -1,0 +1,88 @@
+# Backend/controllers/batch_seller_controller.py
+
+import os
+import sys
+import torch
+from datetime import datetime
+from bson import ObjectId
+from Backend.utils.database import db
+
+# make sure the AI module import works
+project_root = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "./../..")
+)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from AI.Batch_Analysis.Seller_Profiling_Engine.seller_garph_profiler import SellerGraphModel
+
+# Mongo collections
+users_col    = db["users"]
+products_col = db["products"]
+reviews_col  = db["reviews"]
+
+def to_tensor(x):
+    """Convert float/int or list to a torch Tensor shaped [N,1]."""
+    if isinstance(x, torch.Tensor):
+        return x.float()
+    if isinstance(x, (float, int)):
+        return torch.tensor([[float(x)]], dtype=torch.float32)
+    if isinstance(x, (list, tuple)):
+        return torch.tensor(x, dtype=torch.float32).view(-1, 1)
+    raise ValueError(f"Unsupported type: {type(x)}")
+
+async def batch_update_seller_scores():
+    """
+    Runs the SellerGraphModel on each seller and updates their `score` field.
+    """
+    print(f"🔔 Running batch_update_seller_scores at {datetime.utcnow()}")
+    model = SellerGraphModel(hidden_channels=32)
+    updated_count = 0
+
+    # iterate all sellers
+    for user in users_col.find({"type": "seller"}):
+        sid = str(user["_id"])
+
+        # seller feature from existing score
+        seller_feat = to_tensor(user.get("score", 0.0))
+
+        # gather product features and their review scores
+        product_feats = []
+        for p in products_col.find({"seller_id": sid}):
+            # collect review scores for this product
+            review_scores = [
+                r.get("rating_score", 0.0)
+                for r in reviews_col.find({
+                    "product_id": str(p["_id"])
+                })
+            ]
+            product_feats.append({
+                "vision":     to_tensor(p.get("vision_score", 0.0)),
+                "text":       to_tensor(p.get("text_score",   0.0)),
+                "multimodal": to_tensor(p.get("multimodal_score", 0.0)),
+                "ensemble":   to_tensor(p.get("ensemble_score",   0.0)),
+                "reviews":    [to_tensor(rs) for rs in review_scores],
+            })
+
+        # build input for the model and run
+        inp = {
+            "seller_features":   seller_feat,
+            "product_features": product_feats
+        }
+        try:
+            risk_tensor = model(inp)
+            new_score = float(risk_tensor.item())
+        except Exception as e:
+            print(f"❌ Model failed for seller {sid}: {e}")
+            continue
+
+        # update the user document
+        res = users_col.update_one(
+            {"_id": ObjectId(sid)},
+            {"$set": {"score": new_score, "updated_at": datetime.utcnow()}}
+        )
+        if res.modified_count:
+            updated_count += 1
+
+    print(f"✅ batch_update_seller_scores updated {updated_count} sellers.")
+    return {"updated": updated_count}

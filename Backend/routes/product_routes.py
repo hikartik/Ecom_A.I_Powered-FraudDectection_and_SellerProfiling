@@ -2,7 +2,8 @@ from fastapi import APIRouter, UploadFile, File, Form, Depends
 from typing import List
 from Backend.controllers.product_controller import (
     create_product_controller,
-    get_products_by_seller
+    get_products_by_seller,
+    get_all_products_controller
 )
 from Backend.utils.jwt_handler import get_current_user_id
 
@@ -30,3 +31,10 @@ async def add_product(
 @router.get("/my")
 def list_my_products(seller_id: str = Depends(get_current_user_id)):
     return get_products_by_seller(seller_id)
+
+# Get ite,s for user dashboard
+@router.get("/", summary="List all products")
+def list_all_products():
+    # you can keep this sync too
+    return get_all_products_controller()
+

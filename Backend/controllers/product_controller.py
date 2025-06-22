@@ -11,6 +11,7 @@ from PIL import Image
 from io import BytesIO
 from fastapi import UploadFile
 
+
 product_collection = db["products"]
 
 async def create_product_controller(
@@ -56,6 +57,7 @@ async def create_product_controller(
         if not isinstance(url, str):
             raise HTTPException(status_code=500, detail="Invalid Cloudinary response")
         image_urls.append(url)
+    _status = "blocked_ai" if preds.get("risk_label", "") == "High Risk" else "valid"
 
     # 5) Build Pydantic model with all fields including AI scores
     product = Product(
@@ -68,6 +70,7 @@ async def create_product_controller(
         multimodal_score=preds.get("multimodal_score", 0.0),
         ensemble_score=preds.get("ensemble_score", 0.0),
         risk_label=preds.get("risk_label", ""),
+        status=_status,
         created_at=datetime.utcnow()
     )
 
@@ -104,3 +107,16 @@ def get_products_by_seller(seller_id: str) -> List[Dict]:
         })
     return products
 
+def get_all_products_controller() -> List[dict]:
+    """
+    Fetch every product from MongoDB and return a JSON‐serializable list.
+    (synchronous)
+    """
+    try:
+        docs = product_collection.find({})
+        # normal for-loop, not async
+        return [Product(**doc) for doc in docs]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching products: {e}")
+
+    
