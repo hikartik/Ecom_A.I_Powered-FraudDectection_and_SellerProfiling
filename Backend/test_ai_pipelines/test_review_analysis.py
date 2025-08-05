@@ -14,6 +14,10 @@ reviews = [
     "Worst product I have ever used.",
 ]
 
-scorer = BatchReviewScorer()
-final_scores = scorer.score(reviews)
-print(final_scores)
+
+def test_batch_review_scorer():
+    scorer = BatchReviewScorer()
+    final_scores = scorer.score(reviews)
+    assert len(final_scores) == len(reviews)
+    for score in final_scores:
+        assert 0.0 <= score <= 1.0
